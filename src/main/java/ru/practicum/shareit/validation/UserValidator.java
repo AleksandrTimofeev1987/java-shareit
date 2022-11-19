@@ -1,16 +1,21 @@
 package ru.practicum.shareit.validation;
 
-import ru.practicum.shareit.exception.model.InvalidUserName;
-import ru.practicum.shareit.user.model.User;
+import org.apache.commons.validator.EmailValidator;
+import ru.practicum.shareit.exception.model.user.InvalidUserEmailException;
+import ru.practicum.shareit.exception.model.user.InvalidUserNameException;
+import ru.practicum.shareit.user.dto.UserDto;
 
 public class UserValidator {
 
-    public static void validateUser(User user) {
-        if (user.getName().equals(null) || user.getName().equals("")) {
-            throw new InvalidUserName("User name should not be Null or Blank");
+    public static void validateUser(UserDto user) {
+        if (user.getName() == null || user.getName().equals("")) {
+            throw new InvalidUserNameException("User name should not be Null or Blank");
         }
-        if (user.getEmail().equals(null) || user.getEmail().equals("")) {
-            throw new InvalidUserName("User email should not be Null or Blank");
+        if (user.getEmail() == null || user.getEmail().equals("")) {
+            throw new InvalidUserEmailException("User email should not be Null or Blank");
+        }
+        if (!EmailValidator.getInstance().isValid(user.getEmail())) {
+            throw new InvalidUserEmailException("User email is not valid");
         }
     }
 

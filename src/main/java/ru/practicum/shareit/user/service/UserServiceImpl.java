@@ -39,22 +39,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto createUser(User user) {
+    public UserDto createUser(UserDto user) {
         log.debug("Request to add user with name - {} is received.", user.getName());
         UserValidator.validateUser(user);
         userRepository.validateUserEmail(user.getEmail());
-        User addedUser = userRepository.createUser(user);
+        User addedUser = userRepository.createUser(UserMapper.mapDtoToUser(user));
         log.debug("User with ID - {} is added to repository.", addedUser.getId());
         return UserMapper.mapUserToDto(addedUser);
     }
 
     @Override
-    public UserDto updateUser(Long id, User user) {
+    public UserDto updateUser(Long id, UserDto user) {
         log.debug("Request to update user with ID - {} is received.", id);
         if (user.getEmail() != null) {
             userRepository.validateUserEmail(user.getEmail());
         }
-        User updatedUser = userRepository.updateUser(id, user);
+        User updatedUser = userRepository.updateUser(id, UserMapper.mapDtoToUser(user));
         log.debug("User with ID - {} is updated in repository.", id);
         return UserMapper.mapUserToDto(updatedUser);
     }

@@ -1,4 +1,4 @@
-package ru.practicum.shareit.exception.model;
+package ru.practicum.shareit.exception.model.user;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

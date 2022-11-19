@@ -13,6 +13,6 @@ public class ItemDto {
     private Long id;
     private String name;
     private String description;
-    // TODO: DELETE?
+    private Long ownerId;
     private Boolean available;
 }

@@ -1,7 +1,11 @@
 package ru.practicum.shareit.item.repository;
 
 import org.springframework.stereotype.Repository;
+import ru.practicum.shareit.exception.model.item.ItemDoesNotExistException;
+import ru.practicum.shareit.exception.model.item.ItemIsNotOwnedByUserException;
+import ru.practicum.shareit.exception.model.user.UserDoesNotExistException;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.HashMap;
@@ -17,30 +21,25 @@ public class InMemoryItemRepository implements ItemRepository {
 
     @Override
     public Item createItem(long userId, ItemDto item) {
-        long id = getNextId();
-        Item newItem = new Item(id,
-                item.getName(),
-                item.getDescription(),
-                userId,
-                item.getAvailable());
-        items.put(id, newItem);
-        return items.get(id);
+        long itemId = getNextId();
+        Item newItem = ItemMapper.mapDtoToItem(item);
+        newItem.setId(itemId);
+        newItem.setOwnerId(userId);
+        items.put(itemId, newItem);
+        return items.get(itemId);
     }
 
     @Override
     public Item updateItem(long userId, long itemId, ItemDto item) {
         Item updatableItem = items.get(itemId);
-        // TODO: REFACTOR CHECK TO SERVICE
-        if (updatableItem.getOwnerId().equals(userId)) {
-            if (item.getName() != null) {
-                updatableItem.setName(item.getName());
-            }
-            if (item.getDescription() != null) {
-                updatableItem.setDescription(item.getDescription());
-            }
-            if (item.getAvailable() != null) {
-                updatableItem.setIsAvailable(item.getAvailable());
-            }
+        if (item.getName() != null) {
+            updatableItem.setName(item.getName());
+        }
+        if (item.getDescription() != null) {
+            updatableItem.setDescription(item.getDescription());
+        }
+        if (item.getAvailable() != null) {
+            updatableItem.setIsAvailable(item.getAvailable());
         }
         return items.get(itemId);
     }
@@ -62,8 +61,22 @@ public class InMemoryItemRepository implements ItemRepository {
     public List<Item> searchItemsByText(String text) {
         return items.values()
                 .stream()
-                .filter(item -> item.getName().contains(text) || item.getDescription().contains(text))
+                .filter(item -> item.getName().toLowerCase().contains(text) || item.getDescription().toLowerCase().contains(text) && item.getIsAvailable().equals(true))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void validateItemExists(long itemId) {
+        if (!items.containsKey(itemId)) {
+            throw new ItemDoesNotExistException(String.format("Item with id: %d is not found", itemId));
+        }
+    }
+
+    @Override
+    public void validateUserOwnItem(long userId, long itemId) {
+        if(!items.get(itemId).getOwnerId().equals(userId)) {
+            throw new ItemIsNotOwnedByUserException(String.format("Item requested to be updated with ID - %d is not owned by user with ID - %d", itemId, userId));
+        }
     }
 
     private Long getNextId() {

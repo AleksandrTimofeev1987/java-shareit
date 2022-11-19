@@ -1,11 +1,11 @@
-package ru.practicum.shareit.exception.model;
+package ru.practicum.shareit.exception.model.item;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-public class InvalidUserName extends RuntimeException {
-    public InvalidUserName(String message) {
+public class InvalidItemNameException extends RuntimeException {
+    public InvalidItemNameException(String message) {
         super(message);
     }
 }

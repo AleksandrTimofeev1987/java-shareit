@@ -49,4 +49,19 @@ public interface ItemRepository {
      * @return - List of items (DTO) containing text in name or description.
      */
     List<Item> searchItemsByText(String text);
+
+    /**
+     * Method checks if item exists by id.
+     *
+     * @param itemId - Item ID to be validated.
+     */
+    void validateItemExists(long itemId);
+
+    /**
+     * Method checks if item with itemId is owned by user with userId.
+     *
+     * @param userId - ID of user to be validated.
+     * @param itemId - ID of item to be validated.
+     */
+    void validateUserOwnItem(long userId, long itemId);
 }

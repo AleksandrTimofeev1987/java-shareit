@@ -24,19 +24,19 @@ public interface UserService {
     /**
      * Method adds user to repository.
      *
-     * @param user - User to be added.
+     * @param user - User (DTO) to be added.
      * @return - Added user (DTO) with assigned ID.
      */
-    UserDto createUser(User user);
+    UserDto createUser(UserDto user);
 
     /**
      * Method updates user in repository.
      *
      * @param id - ID of user to be updated.
-     * @param user - User to be updated.
+     * @param user - User (DTO) to be updated.
      * @return - Updated user (DTO).
      */
-    UserDto updateUser(Long id, User user);
+    UserDto updateUser(Long id, UserDto user);
 
     /**
      * Method deletes user in repository.

@@ -1,8 +1,8 @@
 package ru.practicum.shareit.user.repository;
 
 import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.exception.model.EmailIsNotDistinctException;
-import ru.practicum.shareit.exception.model.UserDoesNotExistException;
+import ru.practicum.shareit.exception.model.user.EmailIsNotDistinctException;
+import ru.practicum.shareit.exception.model.user.UserDoesNotExistException;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
