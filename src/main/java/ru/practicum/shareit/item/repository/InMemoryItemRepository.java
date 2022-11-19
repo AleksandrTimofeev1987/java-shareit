@@ -3,7 +3,6 @@ package ru.practicum.shareit.item.repository;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exception.model.item.ItemDoesNotExistException;
 import ru.practicum.shareit.exception.model.item.ItemIsNotOwnedByUserException;
-import ru.practicum.shareit.exception.model.user.UserDoesNotExistException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
@@ -39,7 +38,7 @@ public class InMemoryItemRepository implements ItemRepository {
             updatableItem.setDescription(item.getDescription());
         }
         if (item.getAvailable() != null) {
-            updatableItem.setIsAvailable(item.getAvailable());
+            updatableItem.setAvailable(item.getAvailable());
         }
         return items.get(itemId);
     }
@@ -61,7 +60,8 @@ public class InMemoryItemRepository implements ItemRepository {
     public List<Item> searchItemsByText(String text) {
         return items.values()
                 .stream()
-                .filter(item -> item.getName().toLowerCase().contains(text) || item.getDescription().toLowerCase().contains(text) && item.getIsAvailable().equals(true))
+                .filter(item -> item.getName().toLowerCase().contains(text) || item.getDescription().toLowerCase().contains(text))
+                .filter(item -> item.getAvailable().equals(true))
                 .collect(Collectors.toList());
     }
 
@@ -74,7 +74,7 @@ public class InMemoryItemRepository implements ItemRepository {
 
     @Override
     public void validateUserOwnItem(long userId, long itemId) {
-        if(!items.get(itemId).getOwnerId().equals(userId)) {
+        if (!items.get(itemId).getOwnerId().equals(userId)) {
             throw new ItemIsNotOwnedByUserException(String.format("Item requested to be updated with ID - %d is not owned by user with ID - %d", itemId, userId));
         }
     }
