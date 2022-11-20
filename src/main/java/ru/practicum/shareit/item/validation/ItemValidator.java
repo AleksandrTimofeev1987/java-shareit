@@ -1,4 +1,4 @@
-package ru.practicum.shareit.validation;
+package ru.practicum.shareit.item.validation;
 
 import ru.practicum.shareit.exception.model.item.InvalidItemDescriptionException;
 import ru.practicum.shareit.exception.model.item.InvalidItemNameException;

@@ -1,4 +1,4 @@
-package ru.practicum.shareit.validation;
+package ru.practicum.shareit.user.validation;
 
 import org.apache.commons.validator.EmailValidator;
 import ru.practicum.shareit.exception.model.user.InvalidUserEmailException;

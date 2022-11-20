@@ -8,8 +8,8 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.repository.UserRepository;
-import ru.practicum.shareit.validation.ItemValidator;
-import ru.practicum.shareit.validation.SearchValidator;
+import ru.practicum.shareit.item.validation.ItemValidator;
+import ru.practicum.shareit.item.validation.SearchValidator;
 
 import java.util.ArrayList;
 import java.util.List;
