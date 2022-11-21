@@ -25,7 +25,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto createItem(long userId, ItemDto item) {
-        log.debug("Request to add item with name - {} is received from user with ID - {}.", item.getName(), userId);
+        log.debug("Request to add item with name - {} is received.", item.getName());
         userRepository.validateUserExists(userId);
         ItemValidator.validateItem(item);
 
@@ -36,7 +36,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto updateItem(long userId, long itemId, ItemDto item) {
-        log.debug("Request to update item with ID - {} is received from user with ID - {}.", itemId, userId);
+        log.debug("Request to update item with ID - {} is received.", itemId);
         userRepository.validateUserExists(userId);
         itemRepository.validateUserOwnItem(userId, itemId);
 
@@ -47,7 +47,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto getItemById(long userId, long itemId) {
-        log.debug("Item with ID - {} is requested from user with ID - {}.", itemId, userId);
+        log.debug("Item with ID - {} is requested.", itemId);
         userRepository.validateUserExists(userId);
         itemRepository.validateItemExists(itemId);
 
@@ -70,7 +70,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> searchItemsByText(long userId, String text) {
-        log.debug("A list of all items containing text ({}) in name or description is requested by user with ID - {}.", text, userId);
+        log.debug("A list of all items containing text ({}) in name or description is requested.", text);
         userRepository.validateUserExists(userId);
         if (!SearchValidator.validateText(text)) {
             return new ArrayList<>();
