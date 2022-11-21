@@ -7,22 +7,11 @@ import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import ru.practicum.shareit.exception.model.*;
-import ru.practicum.shareit.exception.model.item.*;
-import ru.practicum.shareit.exception.model.user.EmailIsNotDistinctException;
-import ru.practicum.shareit.exception.model.user.InvalidUserEmailException;
-import ru.practicum.shareit.exception.model.user.InvalidUserNameException;
-import ru.practicum.shareit.exception.model.user.UserDoesNotExistException;
 
 @Slf4j
 public class ErrorHandler {
 
-    @ExceptionHandler(value = {MethodArgumentNotValidException.class,
-            InvalidUserNameException.class,
-            InvalidUserEmailException.class,
-            InvalidItemNameException.class,
-            InvalidItemDescriptionException.class,
-            MissingAvailabilityException.class
-    })
+    @ExceptionHandler(value = {MethodArgumentNotValidException.class, BadRequestException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleBadRequest(final RuntimeException e) {
         log.warn(e.getMessage());
@@ -37,23 +26,23 @@ public class ErrorHandler {
         return new ErrorResponse(message);
     }
 
-    @ExceptionHandler(value = {UserDoesNotExistException.class, ItemDoesNotExistException.class})
+    @ExceptionHandler
     @ResponseStatus(value = HttpStatus.NOT_FOUND)
-    public ErrorResponse handleNotExists(final RuntimeException e) {
+    public ErrorResponse handleNotExists(final NotFoundException e) {
         log.warn(e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(value = HttpStatus.FORBIDDEN)
-    public ErrorResponse handleForbidden(final ItemIsNotOwnedByUserException e) {
+    public ErrorResponse handleForbidden(final ForbiddenException e) {
         log.warn(e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(value = HttpStatus.CONFLICT)
-    public ErrorResponse handleAlreadyExists(final EmailIsNotDistinctException e) {
+    public ErrorResponse handleAlreadyExists(final ConflictException e) {
         log.warn(e.getMessage());
         return new ErrorResponse(e.getMessage());
     }

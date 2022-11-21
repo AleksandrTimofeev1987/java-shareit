@@ -1,8 +1,8 @@
 package ru.practicum.shareit.user.repository;
 
 import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.exception.model.user.EmailIsNotDistinctException;
-import ru.practicum.shareit.exception.model.user.UserDoesNotExistException;
+import ru.practicum.shareit.exception.model.ConflictException;
+import ru.practicum.shareit.exception.model.NotFoundException;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public void validateUserExists(Long id) {
         if (!users.containsKey(id)) {
-            throw new UserDoesNotExistException(String.format("User with id: %d is not found", id));
+            throw new NotFoundException(String.format("User with id: %d is not found", id));
         }
     }
 
@@ -66,7 +66,7 @@ public class InMemoryUserRepository implements UserRepository {
                 .map(User::getEmail)
                 .collect(Collectors.toList())
                 .contains(email)) {
-            throw new EmailIsNotDistinctException(String.format("Email: %s is already in use.", email));
+            throw new ConflictException(String.format("Email: %s is already in use.", email));
         }
     }
 
