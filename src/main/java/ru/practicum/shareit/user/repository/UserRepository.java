@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user.repository;
 
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.request.model.User;
+import ru.practicum.shareit.user.dto.UpdateUserDto;
 
 import java.util.List;
 
@@ -35,7 +36,7 @@ public interface UserRepository {
      * @param user - User to be updated.
      * @return - Updated user.
      */
-    User updateUser(Long id, User user);
+    User updateUser(Long id, UpdateUserDto user);
 
     /**
      * Method deletes user in repository.

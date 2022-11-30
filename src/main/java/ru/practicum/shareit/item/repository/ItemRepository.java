@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.repository;
 
-import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemCreateRequest;
+import ru.practicum.shareit.item.dto.UpdateItemDto;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
@@ -13,7 +14,7 @@ public interface ItemRepository {
      * @param item - Item (DTO) to be added.
      * @return - Added item with assigned ID.
      */
-    Item createItem(long userId, ItemDto item);
+    Item createItem(long userId, ItemCreateRequest item);
 
     /**
      * Method updates item in repository.
@@ -23,7 +24,7 @@ public interface ItemRepository {
      * @param item - Item (DTO) to be updated.
      * @return - Updated item with assigned ID.
      */
-    Item updateItem(long userId, long itemId, ItemDto item);
+    Item updateItem(long userId, long itemId, UpdateItemDto item);
 
     /**
      * Method returns item by ID.

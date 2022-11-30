@@ -1,6 +1,8 @@
 package ru.practicum.shareit.item.service;
 
-import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemCreateRequest;
+import ru.practicum.shareit.item.dto.ItemResponse;
+import ru.practicum.shareit.item.dto.UpdateItemDto;
 
 import java.util.List;
 
@@ -12,7 +14,7 @@ public interface ItemService {
      * @param item - Item (DTO) to be added.
      * @return - Added item (DTO) with assigned ID.
      */
-    ItemDto createItem(long userId, ItemDto item);
+    ItemResponse createItem(long userId, ItemCreateRequest item);
 
     /**
      * Method updates item in repository.
@@ -22,7 +24,7 @@ public interface ItemService {
      * @param item - Item (DTO) to be updated.
      * @return - Updated item (DTO) with assigned ID.
      */
-    ItemDto updateItem(long userId, long itemId, ItemDto item);
+    ItemResponse updateItem(long userId, long itemId, UpdateItemDto item);
 
     /**
      * Method returns item (DTO) by ID.
@@ -31,7 +33,7 @@ public interface ItemService {
      * @param itemId - ID of item requested.
      * @return - Item (DTO) with requested ID.
      */
-    ItemDto getItemById(long userId, long itemId);
+    ItemResponse getItemById(long userId, long itemId);
 
     /**
      * Method returns list of items (DTO) owned by user.
@@ -39,7 +41,7 @@ public interface ItemService {
      * @param userId - ID of user - owner of items.
      * @return - List of items (DTO) owned by user.
      */
-    List<ItemDto> getAllItemsByUserId(long userId);
+    List<ItemResponse> getAllItemsByUserId(long userId);
 
     /**
      * Method returns list of items (DTO) containing certain text in name or description.
@@ -49,5 +51,5 @@ public interface ItemService {
      *
      * @return - List of items (DTO) containing text in name or description.
      */
-    List<ItemDto> searchItemsByText(long userId, String text);
+    List<ItemResponse> searchItemsByText(long userId, String text);
 }

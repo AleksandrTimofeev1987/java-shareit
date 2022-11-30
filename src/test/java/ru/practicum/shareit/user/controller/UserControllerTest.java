@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserCreateRequest;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -27,7 +27,7 @@ public class UserControllerTest {
     private static final String UPDATED_NAME = "updated_name";
     private static final String EMAIL = "new@yandex.ru";
     private static final String UPDATED_EMAIL = "updated@yandex.ru";
-    private static final UserDto USER = new UserDto(null, NAME,EMAIL);
+    private static final UserCreateRequest USER = new UserCreateRequest(null, NAME,EMAIL);
 
     // Testing getting all users
     @Test
@@ -93,7 +93,7 @@ public class UserControllerTest {
         //given
         postValidUser();
 
-        UserDto updatedUser = new UserDto(null, UPDATED_NAME, UPDATED_EMAIL);
+        UserCreateRequest updatedUser = new UserCreateRequest(null, UPDATED_NAME, UPDATED_EMAIL);
 
         //when
         mockMvc.perform(
@@ -116,7 +116,7 @@ public class UserControllerTest {
         //given
         postValidUser();
 
-        UserDto updatedUser = new UserDto(null, UPDATED_NAME, null);
+        UserCreateRequest updatedUser = new UserCreateRequest(null, UPDATED_NAME, null);
 
         //when
         mockMvc.perform(
@@ -139,7 +139,7 @@ public class UserControllerTest {
         //given
         postValidUser();
 
-        UserDto updatedUser = new UserDto(null, null, UPDATED_EMAIL);
+        UserCreateRequest updatedUser = new UserCreateRequest(null, null, UPDATED_EMAIL);
 
         //when
         mockMvc.perform(
