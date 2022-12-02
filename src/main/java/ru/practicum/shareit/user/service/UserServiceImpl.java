@@ -3,12 +3,12 @@ package ru.practicum.shareit.user.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.model.NotFoundException;
 import ru.practicum.shareit.user.dto.UserUpdateDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
-import ru.practicum.shareit.user.validator.UserValidator;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,10 +19,10 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final UserValidator userValidator;
     private final UserMapper mapper;
 
     @Override
+    @Transactional(readOnly = true)
     public List<User> getAllUsers() {
         log.debug("A list of all users is requested.");
         List<User> allUsers = userRepository.findAll();
@@ -31,6 +31,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public User getUserById(Long id) {
         log.debug("User with ID - {} is requested.", id);
         Optional<User> userOpt = userRepository.findById(id);
@@ -40,6 +41,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public User createUser(User user) {
         log.debug("Request to add user with name - {} is received.", user.getName());
 //        userValidator.validateUserEmail(user.getEmail());
@@ -48,14 +50,11 @@ public class UserServiceImpl implements UserService {
         return addedUser;
     }
 
-    // TODO: правильно ли?
     @Override
+    @Transactional
     public User updateUser(Long id, UserUpdateDto userDto) {
 
         log.debug("Request to update user with ID - {} is received.", id);
-        if (userDto.getEmail() != null) {
-            userValidator.validateUserEmail(userDto.getEmail());
-        }
         Optional<User> userOpt = userRepository.findById(id);
         validateUserExists(id, userOpt);
         User user = userOpt.get();
@@ -67,6 +66,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void deleteUser(Long id) {
         log.debug("Request to delete user with ID - {} is received.", id);
         userRepository.deleteById(id);
