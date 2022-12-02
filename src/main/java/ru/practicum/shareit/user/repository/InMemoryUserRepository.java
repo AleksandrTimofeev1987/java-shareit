@@ -3,12 +3,10 @@ package ru.practicum.shareit.user.repository;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exception.model.ConflictException;
 import ru.practicum.shareit.exception.model.NotFoundException;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.request.model.User;
+import ru.practicum.shareit.user.dto.UpdateUserDto;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository("InMemoryUserRepository")
@@ -36,13 +34,18 @@ public class InMemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public User updateUser(Long id, User user) {
-        User userToBeUpdated = users.get(id);
-        if (user.getName() != null) {
-            userToBeUpdated.setName(user.getName());
+    public User updateUser(Long id, UpdateUserDto user) {
+        User storedUser = users.get(id);
+
+        if (Objects.isNull(storedUser)) {
+            return null;
         }
-        if (user.getEmail() != null) {
-            userToBeUpdated.setEmail(user.getEmail());
+
+        if (user.getName() != null && !Objects.equals(storedUser.getName(), user.getName())) {
+            storedUser.setName(user.getName());
+        }
+        if (user.getEmail() != null && !Objects.equals(storedUser.getEmail(), user.getEmail())) {
+            storedUser.setEmail(user.getEmail());
         }
         return users.get(id);
     }

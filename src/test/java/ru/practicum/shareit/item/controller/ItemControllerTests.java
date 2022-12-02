@@ -8,8 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.item.dto.ItemCreateRequest;
+import ru.practicum.shareit.user.dto.UserCreateRequest;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -33,8 +33,8 @@ public class ItemControllerTests {
     private static final Boolean AVAILABLE = true;
     private static final Boolean NOT_AVAILABLE = false;
 
-    private static final UserDto USER = new UserDto(null, NAME, EMAIL);
-    private static final ItemDto ITEM = new ItemDto(null, ITEM_NAME, ITEM_DESCRIPTION, null, AVAILABLE);
+    private static final UserCreateRequest USER = new UserCreateRequest(null, NAME, EMAIL);
+    private static final ItemCreateRequest ITEM = new ItemCreateRequest(null, ITEM_NAME, ITEM_DESCRIPTION, null, AVAILABLE);
 
     // Testing adding new item
     @Test
@@ -68,7 +68,7 @@ public class ItemControllerTests {
         postValidUser();
         postValidItem();
 
-        ItemDto updatedItem = new ItemDto(null, UPDATED_ITEM_NAME, UPDATED_ITEM_DESCRIPTION, null, NOT_AVAILABLE);
+        ItemCreateRequest updatedItem = new ItemCreateRequest(null, UPDATED_ITEM_NAME, UPDATED_ITEM_DESCRIPTION, null, NOT_AVAILABLE);
 
         //when
         mockMvc.perform(
@@ -95,7 +95,7 @@ public class ItemControllerTests {
         postValidUser();
         postValidItem();
 
-        ItemDto updatedItem = new ItemDto(null, UPDATED_ITEM_NAME, null, null, null);
+        ItemCreateRequest updatedItem = new ItemCreateRequest(null, UPDATED_ITEM_NAME, null, null, null);
 
         //when
         mockMvc.perform(
@@ -122,7 +122,7 @@ public class ItemControllerTests {
         postValidUser();
         postValidItem();
 
-        ItemDto updatedItem = new ItemDto(null, null, UPDATED_ITEM_DESCRIPTION, null, null);
+        ItemCreateRequest updatedItem = new ItemCreateRequest(null, null, UPDATED_ITEM_DESCRIPTION, null, null);
 
         //when
         mockMvc.perform(
@@ -149,7 +149,7 @@ public class ItemControllerTests {
         postValidUser();
         postValidItem();
 
-        ItemDto updatedItem = new ItemDto(null, null, null, null, NOT_AVAILABLE);
+        ItemCreateRequest updatedItem = new ItemCreateRequest(null, null, null, null, NOT_AVAILABLE);
 
         //when
         mockMvc.perform(
@@ -223,7 +223,7 @@ public class ItemControllerTests {
         postValidUser();
         postValidItem();
 
-        ItemDto otherItem = new ItemDto(null, "Drill", "Drilling extravaganza", null, AVAILABLE);
+        ItemCreateRequest otherItem = new ItemCreateRequest(null, "Drill", "Drilling extravaganza", null, AVAILABLE);
         mockMvc.perform(
                 post("/items")
                         .header("X-Sharer-User-Id", 1L)
@@ -251,7 +251,7 @@ public class ItemControllerTests {
         postValidUser();
         postValidItem();
 
-        ItemDto otherItem = new ItemDto(null, "Drill", "Drilling extravaganza", null, AVAILABLE);
+        ItemCreateRequest otherItem = new ItemCreateRequest(null, "Drill", "Drilling extravaganza", null, AVAILABLE);
         mockMvc.perform(
                 post("/items")
                         .header("X-Sharer-User-Id", 1L)
@@ -284,7 +284,7 @@ public class ItemControllerTests {
         postValidUser();
         postValidItem();
 
-        ItemDto otherItem = new ItemDto(null, "Drill name", "Drilling extravaganza", null, AVAILABLE);
+        ItemCreateRequest otherItem = new ItemCreateRequest(null, "Drill name", "Drilling extravaganza", null, AVAILABLE);
         mockMvc.perform(
                 post("/items")
                         .header("X-Sharer-User-Id", 1L)
@@ -322,7 +322,7 @@ public class ItemControllerTests {
         postValidUser();
         postValidItem();
 
-        ItemDto otherItem = new ItemDto(null, "Drill name", "Drilling extravaganza", null, false);
+        ItemCreateRequest otherItem = new ItemCreateRequest(null, "Drill name", "Drilling extravaganza", null, false);
         mockMvc.perform(
                 post("/items")
                         .header("X-Sharer-User-Id", 1L)
@@ -355,7 +355,7 @@ public class ItemControllerTests {
         postValidUser();
         postValidItem();
 
-        ItemDto otherItem = new ItemDto(null, "Drill", "Drilling extravaganza", null, AVAILABLE);
+        ItemCreateRequest otherItem = new ItemCreateRequest(null, "Drill", "Drilling extravaganza", null, AVAILABLE);
         mockMvc.perform(
                 post("/items")
                         .header("X-Sharer-User-Id", 1L)
@@ -388,7 +388,7 @@ public class ItemControllerTests {
         postValidUser();
         postValidItem();
 
-        ItemDto otherItem = new ItemDto(null, "Drill", "Drilling extravaganza description", null, AVAILABLE);
+        ItemCreateRequest otherItem = new ItemCreateRequest(null, "Drill", "Drilling extravaganza description", null, AVAILABLE);
         mockMvc.perform(
                 post("/items")
                         .header("X-Sharer-User-Id", 1L)
@@ -426,7 +426,7 @@ public class ItemControllerTests {
         postValidUser();
         postValidItem();
 
-        ItemDto otherItem = new ItemDto(null, "Drill", "Drilling extravaganza description", null, false);
+        ItemCreateRequest otherItem = new ItemCreateRequest(null, "Drill", "Drilling extravaganza description", null, false);
         mockMvc.perform(
                 post("/items")
                         .header("X-Sharer-User-Id", 1L)

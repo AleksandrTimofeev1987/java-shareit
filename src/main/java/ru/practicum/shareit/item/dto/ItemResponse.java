@@ -5,10 +5,13 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ItemDto {
+public class ItemResponse {
+
     private Long id;
+
     private String name;
+
     private String description;
-    private Long ownerId;
+
     private Boolean available;
 }
