@@ -1,7 +1,8 @@
 package ru.practicum.shareit.user.mapper;
 
-import org.mapstruct.Mapper;
-import ru.practicum.shareit.request.model.User;
+import org.mapstruct.*;
+import ru.practicum.shareit.user.dto.UserUpdateDto;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.dto.UserCreateRequest;
 import ru.practicum.shareit.user.dto.UserResponse;
 
@@ -9,5 +10,10 @@ import ru.practicum.shareit.user.dto.UserResponse;
 public interface UserMapper {
     UserResponse toUserResponse(User user);
 
-    User toUser(UserCreateRequest userDto);
+    User toUserFromUserCreate(UserCreateRequest userDto);
+
+    User toUserFromUserUpdate(UserUpdateDto userDto);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateCustomerFromUpdateDto(UserUpdateDto userDto, @MappingTarget User user);
 }

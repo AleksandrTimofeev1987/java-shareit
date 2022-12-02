@@ -1,8 +1,7 @@
 package ru.practicum.shareit.user.service;
 
-import ru.practicum.shareit.user.dto.UpdateUserDto;
-import ru.practicum.shareit.user.dto.UserCreateRequest;
-import ru.practicum.shareit.user.dto.UserResponse;
+import ru.practicum.shareit.user.dto.UserUpdateDto;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 
@@ -12,7 +11,7 @@ public interface UserService {
      *
      * @return - List of all users (DTO).
      */
-    List<UserResponse> getAllUsers();
+    List<User> getAllUsers();
 
     /**
      * Method returns user (DTO) by ID.
@@ -20,7 +19,7 @@ public interface UserService {
      * @param id - User ID.
      * @return - User (DTO) with requested ID.
      */
-    UserResponse getUserById(Long id);
+    User getUserById(Long id);
 
     /**
      * Method adds user to repository.
@@ -28,16 +27,16 @@ public interface UserService {
      * @param user - User (DTO) to be added.
      * @return - Added user (DTO) with assigned ID.
      */
-    UserResponse createUser(UserCreateRequest user);
+    User createUser(User user);
 
     /**
      * Method updates user in repository.
      *
      * @param id - ID of user to be updated.
-     * @param user - User (DTO) to be updated.
+     * @param userDto - User (DTO) to be updated.
      * @return - Updated user (DTO).
      */
-    UserResponse updateUser(Long id, UpdateUserDto user);
+    User updateUser(Long id, UserUpdateDto userDto);
 
     /**
      * Method deletes user in repository.
