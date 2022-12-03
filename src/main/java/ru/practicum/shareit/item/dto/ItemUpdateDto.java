@@ -9,7 +9,7 @@ import javax.validation.constraints.Null;
 @Getter
 @AllArgsConstructor
 @Valid
-public class UpdateItemDto {
+public class ItemUpdateDto {
 
     @Null
     private Long id;

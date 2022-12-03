@@ -1,19 +1,18 @@
 package ru.practicum.shareit.item.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import ru.practicum.shareit.item.dto.ItemCreateRequest;
-import ru.practicum.shareit.item.dto.ItemResponse;
-import ru.practicum.shareit.item.dto.UpdateItemDto;
+import org.mapstruct.*;
+import ru.practicum.shareit.item.dto.ItemCreateDto;
+import ru.practicum.shareit.item.dto.ItemResponseDto;
+import ru.practicum.shareit.item.dto.ItemUpdateDto;
 import ru.practicum.shareit.item.model.Item;
 
 @Mapper(componentModel = "spring")
 public interface ItemMapper {
 
-    ItemResponse toItemResponse(Item item);
+    ItemResponseDto toItemResponse(Item item);
 
-    Item toItem(ItemCreateRequest itemDto);
+    Item toItemFromItemCreate(ItemCreateDto itemDto);
 
-    @Mapping(target = "id", ignore = false)
-    Item toItem(UpdateItemDto itemDto);
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateItemFromItemUpdate(ItemUpdateDto itemDto, @MappingTarget Item item);
 }

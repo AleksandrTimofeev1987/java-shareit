@@ -11,7 +11,7 @@ import javax.validation.constraints.Size;
 @Data
 @AllArgsConstructor
 @Valid
-public class ItemCreateRequest {
+public class ItemCreateDto {
 
     private Long id;
 

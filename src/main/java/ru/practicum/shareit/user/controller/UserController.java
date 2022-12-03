@@ -2,9 +2,9 @@ package ru.practicum.shareit.user.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.user.dto.UserResponseDto;
 import ru.practicum.shareit.user.dto.UserUpdateDto;
-import ru.practicum.shareit.user.dto.UserCreateRequest;
-import ru.practicum.shareit.user.dto.UserResponse;
+import ru.practicum.shareit.user.dto.UserCreateDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
@@ -23,7 +23,7 @@ public class UserController {
     private final UserMapper mapper;
 
     @GetMapping
-    public List<UserResponse> getAllUsers() {
+    public List<UserResponseDto> getAllUsers() {
         return userService.getAllUsers()
                 .stream()
                 .map(mapper::toUserResponse)
@@ -31,18 +31,18 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public UserResponse getUserById(@Min(1L) @PathVariable Long id) {
+    public UserResponseDto getUserById(@Min(1L) @PathVariable Long id) {
         return mapper.toUserResponse(userService.getUserById(id));
     }
 
     @PostMapping
-    public UserResponse createUser(@Valid @RequestBody UserCreateRequest userDto) {
+    public UserResponseDto createUser(@Valid @RequestBody UserCreateDto userDto) {
         User user = mapper.toUserFromUserCreate(userDto);
         return mapper.toUserResponse(userService.createUser(user));
     }
 
     @PatchMapping("/{id}")
-    public UserResponse updateUser(@Min(1L) @PathVariable Long id, @RequestBody UserUpdateDto userDto) {
+    public UserResponseDto updateUser(@Min(1L) @PathVariable Long id, @RequestBody UserUpdateDto userDto) {
         return mapper.toUserResponse(userService.updateUser(id, userDto));
     }
 

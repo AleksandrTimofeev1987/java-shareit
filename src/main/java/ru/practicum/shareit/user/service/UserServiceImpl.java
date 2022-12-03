@@ -57,10 +57,10 @@ public class UserServiceImpl implements UserService {
         log.debug("Request to update user with ID - {} is received.", id);
         Optional<User> userOpt = userRepository.findById(id);
         validateUserExists(id, userOpt);
-        User user = userOpt.get();
-        mapper.updateCustomerFromUpdateDto(userDto, user);
+        User userForUpgrade = userOpt.get();
+        mapper.userFromUserUpdate(userDto, userForUpgrade);
 
-        User updatedUser = userRepository.save(user);
+        User updatedUser = userRepository.save(userForUpgrade);
         log.debug("User with ID - {} is updated in repository.", id);
         return updatedUser;
     }
@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService {
 
     private void validateUserExists (long id, Optional<User> userOpt) {
         if (!userOpt.isPresent()) {
-            throw new NotFoundException(String.format("Item with id: %d is not found", id));
+            throw new NotFoundException(String.format("User with id: %d is not found", id));
         }
     }
 
