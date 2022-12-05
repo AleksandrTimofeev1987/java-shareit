@@ -16,7 +16,6 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,17 +26,14 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final ItemMapper mapper;
 
-    // TODO: изменить на кастомный метод поиска в репозитории
     @Override
     @Transactional(readOnly = true)
     public List<Item> getAllItemsByUserId(long userId) {
         log.debug("A list of all items owned by user with ID - {} is requested.", userId);
         validateUserExists(userId);
-        List<Item> items = itemRepository.findAll();
+        List<Item> items = itemRepository.findAllByUserId(userId);
         log.debug("A list of all items owned by user with ID - {} is received with size of {}.", userId, items.size());
-        return items.stream()
-                .filter(item -> item.getOwnerId().equals(userId))
-                .collect(Collectors.toList());
+        return items;
     }
 
     @Override
@@ -81,19 +77,15 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<Item> searchItemsByText(long userId, String text) {
         log.debug("A list of all items containing text ({}) in name or description is requested.", text);
-        String lowerCaseText = text.toLowerCase();
         validateUserExists(userId);
         if (!SearchValidator.validateText(text)) {
             return new ArrayList<>();
         }
 
-        List<Item> items = itemRepository.findAll();
+        List<Item> items = itemRepository.searchItemsByText(text);
 
         log.debug("A list of all items containing text ({}) in name or description is received with size of {}.", text, items.size());
-        return items.stream()
-                .filter(item -> item.getName().toLowerCase().contains(lowerCaseText) || item.getDescription().toLowerCase().contains(lowerCaseText))
-                .filter(item -> item.getAvailable().equals(true))
-                .collect(Collectors.toList());
+        return items;
     }
 
     private void validateUserExists(long userId) {

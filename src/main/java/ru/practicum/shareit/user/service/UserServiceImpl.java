@@ -44,7 +44,6 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User createUser(User user) {
         log.debug("Request to add user with name - {} is received.", user.getName());
-//        userValidator.validateUserEmail(user.getEmail());
         User addedUser = userRepository.save(user);
         log.debug("User with ID - {} is added to repository.", addedUser.getId());
         return addedUser;
@@ -73,7 +72,7 @@ public class UserServiceImpl implements UserService {
         log.debug("User with ID - {} is deleted from repository.", id);
     }
 
-    private void validateUserExists (long id, Optional<User> userOpt) {
+    private void validateUserExists(long id, Optional<User> userOpt) {
         if (!userOpt.isPresent()) {
             throw new NotFoundException(String.format("User with id: %d is not found", id));
         }
