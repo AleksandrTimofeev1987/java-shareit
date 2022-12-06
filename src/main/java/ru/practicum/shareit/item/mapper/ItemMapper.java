@@ -9,10 +9,10 @@ import ru.practicum.shareit.item.model.Item;
 @Mapper(componentModel = "spring")
 public interface ItemMapper {
 
-    ItemResponseDto toItemResponse(Item item);
+    ItemResponseDto toItemResponseDto(Item item);
 
-    Item toItemFromItemCreate(ItemCreateDto itemDto);
+    Item toItemFromItemCreateDto(ItemCreateDto itemDto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateItemFromItemUpdate(ItemUpdateDto itemDto, @MappingTarget Item item);
+    void itemFromItemUpdateDto(ItemUpdateDto itemDto, @MappingTarget Item item);
 }

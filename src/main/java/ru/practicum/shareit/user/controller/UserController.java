@@ -26,24 +26,24 @@ public class UserController {
     public List<UserResponseDto> getAllUsers() {
         return userService.getAllUsers()
                 .stream()
-                .map(mapper::toUserResponse)
+                .map(mapper::toUserResponseDto)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     public UserResponseDto getUserById(@Min(1L) @PathVariable Long id) {
-        return mapper.toUserResponse(userService.getUserById(id));
+        return mapper.toUserResponseDto(userService.getUserById(id));
     }
 
     @PostMapping
     public UserResponseDto createUser(@Valid @RequestBody UserCreateDto userDto) {
-        User user = mapper.toUserFromUserCreate(userDto);
-        return mapper.toUserResponse(userService.createUser(user));
+        User user = mapper.toUserFromUserCreateDto(userDto);
+        return mapper.toUserResponseDto(userService.createUser(user));
     }
 
     @PatchMapping("/{id}")
     public UserResponseDto updateUser(@Min(1L) @PathVariable Long id, @RequestBody UserUpdateDto userDto) {
-        return mapper.toUserResponse(userService.updateUser(id, userDto));
+        return mapper.toUserResponseDto(userService.updateUser(id, userDto));
     }
 
     @DeleteMapping("/{id}")

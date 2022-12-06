@@ -27,28 +27,28 @@ public class ItemController {
     public List<ItemResponseDto> getAllItemsByUserId(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId) {
         return itemService.getAllItemsByUserId(userId)
                 .stream()
-                .map(mapper::toItemResponse)
+                .map(mapper::toItemResponseDto)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{itemId}")
     public ItemResponseDto getItemById(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                        @Min(1L) @PathVariable Long itemId) {
-        return mapper.toItemResponse(itemService.getItemById(userId, itemId));
+        return mapper.toItemResponseDto(itemService.getItemById(userId, itemId));
     }
 
     @PostMapping
     public ItemResponseDto createItem(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                       @Valid @RequestBody ItemCreateDto itemDto) {
-        Item item = mapper.toItemFromItemCreate(itemDto);
-        return mapper.toItemResponse(itemService.createItem(userId, item));
+        Item item = mapper.toItemFromItemCreateDto(itemDto);
+        return mapper.toItemResponseDto(itemService.createItem(userId, item));
     }
 
     @PatchMapping("/{itemId}")
     public ItemResponseDto updateItem(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                       @Min(1L) @PathVariable long itemId,
                                       @RequestBody ItemUpdateDto itemDto) {
-        return mapper.toItemResponse(itemService.updateItem(userId, itemId, itemDto));
+        return mapper.toItemResponseDto(itemService.updateItem(userId, itemId, itemDto));
     }
 
     @GetMapping("/search")
@@ -56,7 +56,7 @@ public class ItemController {
                                                    @RequestParam String text) {
         return itemService.searchItemsByText(userId, text)
                 .stream()
-                .map(mapper::toItemResponse)
+                .map(mapper::toItemResponseDto)
                 .collect(Collectors.toList());
     }
 }

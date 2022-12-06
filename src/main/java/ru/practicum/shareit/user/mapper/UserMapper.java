@@ -8,10 +8,10 @@ import ru.practicum.shareit.user.dto.UserResponseDto;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-    UserResponseDto toUserResponse(User user);
+    UserResponseDto toUserResponseDto(User user);
 
-    User toUserFromUserCreate(UserCreateDto userDto);
+    User toUserFromUserCreateDto(UserCreateDto userDto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void userFromUserUpdate(UserUpdateDto userDto, @MappingTarget User user);
+    void userFromUserUpdateDto(UserUpdateDto userDto, @MappingTarget User user);
 }

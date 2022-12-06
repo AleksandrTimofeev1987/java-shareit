@@ -67,7 +67,7 @@ public class ItemServiceImpl implements ItemService {
 
         validateUserOwnItem(userId, itemForUpgrade);
 
-        mapper.updateItemFromItemUpdate(itemDto, itemForUpgrade);
+        mapper.itemFromItemUpdateDto(itemDto, itemForUpgrade);
 
         Item updatedItem = itemRepository.save(itemForUpgrade);
         log.debug("Item with ID - {} is updated in repository.", itemId);

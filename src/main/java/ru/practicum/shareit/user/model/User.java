@@ -14,6 +14,7 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class User {
 
     @Id
@@ -29,6 +30,10 @@ public class User {
     @NotBlank (message = "User email should not be Null or Blank")
     @Column(name = "email", nullable = false, unique = true)
     private String email;
+
+    public User(Long id) {
+        this.id = id;
+    }
 
     @Override
     public boolean equals(Object o) {

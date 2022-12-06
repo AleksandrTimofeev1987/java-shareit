@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
         Optional<User> userOpt = userRepository.findById(id);
         validateUserExists(id, userOpt);
         User userForUpgrade = userOpt.get();
-        mapper.userFromUserUpdate(userDto, userForUpgrade);
+        mapper.userFromUserUpdateDto(userDto, userForUpgrade);
 
         User updatedUser = userRepository.save(userForUpgrade);
         log.debug("User with ID - {} is updated in repository.", id);

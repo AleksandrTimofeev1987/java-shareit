@@ -14,6 +14,7 @@ import javax.validation.constraints.Size;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class Item {
 
     @Id
@@ -36,6 +37,7 @@ public class Item {
     @NotNull (message = "Item availability should not be Null")
     @Column(name = "available", nullable = false)
     private Boolean available;
+
 
     @Override
     public boolean equals(Object o) {
