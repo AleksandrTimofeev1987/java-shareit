@@ -6,10 +6,13 @@ import ru.practicum.shareit.booking.dto.BookingCreateDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.BookingCreate;
+import ru.practicum.shareit.booking.model.RequestStatus;
 import ru.practicum.shareit.booking.service.BookingService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path = "/bookings")
@@ -19,6 +22,24 @@ public class BookingController {
     private final BookingService bookingService;
     private final BookingMapper mapper;
     private static final String REQUEST_HEADER_USER_ID_TITLE = "X-Sharer-User-Id";
+
+    @GetMapping
+    List<BookingResponseDto> getAllBookingsByBooker(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
+                                                    @RequestParam (required = false, defaultValue = "ALL") RequestStatus state) {
+        return bookingService.getAllBookingsByBooker(userId, state)
+                .stream()
+                .map(mapper::toBookingResponseDto)
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/owner")
+    List<BookingResponseDto> getAllBookingsByOwner(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
+                                                    @RequestParam (required = false, defaultValue = "ALL") RequestStatus state) {
+        return bookingService.getAllBookingsByOwner(userId, state)
+                .stream()
+                .map(mapper::toBookingResponseDto)
+                .collect(Collectors.toList());
+    }
 
     @GetMapping("/{bookingId}")
     BookingResponseDto getBookingById(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
@@ -40,5 +61,4 @@ public class BookingController {
                                         @RequestParam Boolean approved) {
         return mapper.toBookingResponseDto(bookingService.setBookingStatus(userId, bookingId, approved));
     }
-
 }

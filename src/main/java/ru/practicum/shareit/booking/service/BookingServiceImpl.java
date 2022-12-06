@@ -2,16 +2,23 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingCreate;
 import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.booking.model.RequestStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.model.BadRequestException;
 import ru.practicum.shareit.exception.model.NotFoundException;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.repository.UserRepository;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +28,75 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
+
+    @Override
+    public List<Booking> getAllBookingsByBooker(Long userId, RequestStatus state) {
+        log.debug("Request to get all bookings made by user with id - {} is received (state = {}).", userId, state);
+        validateUserExists(userId);
+
+        List<BookingCreate> foundBookings = new ArrayList<>();
+
+        switch (state) {
+            case ALL:
+                foundBookings = bookingRepository.findByBookerId(userId, Sort.by(Sort.Direction.DESC, "start"));
+                break;
+            case CURRENT:
+                foundBookings = bookingRepository.findByBookerIdAndEndIsBefore(userId, Sort.by(Sort.Direction.DESC, "start"), LocalDateTime.now());
+                break;
+            case PAST:
+                foundBookings = bookingRepository.findByBookerIdAndEndIsAfter(userId, Sort.by(Sort.Direction.DESC, "start"), LocalDateTime.now());
+                break;
+            case FUTURE:
+                foundBookings = bookingRepository.findByBookerIdAndStartIsAfter(userId, Sort.by(Sort.Direction.DESC, "start"), LocalDateTime.now());
+                break;
+            case WAITING:
+                foundBookings = bookingRepository.findByBookerIdAndStatus(userId, Sort.by(Sort.Direction.DESC, "start"), BookingStatus.WAITING);
+                break;
+            case REJECTED:
+                foundBookings = bookingRepository.findByBookerIdAndStatus(userId, Sort.by(Sort.Direction.DESC, "start"), BookingStatus.REJECTED);
+                break;
+        }
+
+        return foundBookings
+                .stream()
+                .map(this::mapBookingCreateToBooking)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Booking> getAllBookingsByOwner(Long userId, RequestStatus state) {
+        log.debug("Request to get all bookings for items owned by user with id - {} is received (state = {}).", userId, state);
+        validateUserExists(userId);
+        validateUserOwnItems(userId);
+
+        List<BookingCreate> foundBookings = new ArrayList<>();
+
+        switch (state) {
+            case ALL:
+                foundBookings = bookingRepository.findAllByOwnerId(userId);
+                break;
+            case CURRENT:
+                foundBookings = bookingRepository.findByOwnerIdAndEndIsBefore(userId, LocalDateTime.now());
+                break;
+            case PAST:
+                foundBookings = bookingRepository.findByOwnerIdAndEndIsAfter(userId, LocalDateTime.now());
+                break;
+            case FUTURE:
+                foundBookings = bookingRepository.findByOwnerIdAndStartIsAfter(userId, LocalDateTime.now());
+                break;
+            case WAITING:
+                foundBookings = bookingRepository.findByItemOwnerIdAndStatus(userId, BookingStatus.WAITING.getCode());
+                break;
+            case REJECTED:
+                foundBookings = bookingRepository.findByItemOwnerIdAndStatus(userId, BookingStatus.REJECTED.getCode());
+                break;
+        }
+
+        return foundBookings
+                .stream()
+                .map(this::mapBookingCreateToBooking)
+                .collect(Collectors.toList());
+    }
 
     @Override
     public Booking getBookingById(Long userId, Long bookingId) {
@@ -143,6 +219,12 @@ public class BookingServiceImpl implements BookingService {
     private void validateUserOwnItemOrUserCreatedBooking(Long userId, Long bookingId) {
         if (!userId.equals(bookingRepository.getItemOwnerId(bookingId)) && !userId.equals(bookingRepository.getBookerId(bookingId))) {
             throw new NotFoundException("Request to get booking is received from user who is not item owner or booker");
+        }
+    }
+
+    private void validateUserOwnItems(Long userId) {
+        if (itemRepository.countItemsOwnedByUser(userId) <= 0) {
+            throw new NotFoundException(String.format("User with ID: %d does not own any items", userId));
         }
     }
 }
