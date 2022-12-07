@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Setter
 @ToString
 @NoArgsConstructor
-public class Item {
+public class ItemEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,8 +33,8 @@ public class Item {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Item)) return false;
-        return id != null && id.equals(((Item) o).getId());
+        if (!(o instanceof ItemEntity)) return false;
+        return id != null && id.equals(((ItemEntity) o).getId());
     }
 
     @Override

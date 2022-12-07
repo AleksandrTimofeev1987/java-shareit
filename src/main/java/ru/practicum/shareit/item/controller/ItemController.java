@@ -6,7 +6,7 @@ import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.CommentEntity;
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.model.ItemEntity;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
@@ -41,7 +41,7 @@ public class ItemController {
     @PostMapping
     public ItemResponseDto createItem(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                       @Valid @RequestBody ItemCreateDto itemDto) {
-        Item item = itemMapper.toItemFromItemCreateDto(itemDto);
+        ItemEntity item = itemMapper.toItemEntity(itemDto);
         return itemMapper.toItemResponseDto(itemService.createItem(userId, item));
     }
 
@@ -65,7 +65,7 @@ public class ItemController {
     public CommentResponseDto createComment(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                             @Min(1L) @PathVariable Long itemId,
                                             @Valid @RequestBody CommentCreateDto commentDto) {
-        CommentEntity comment = commentMapper.toCommentCreateFromCommentCreateDto(commentDto, userId, itemId);
+        CommentEntity comment = commentMapper.toCommentEntity(commentDto, userId, itemId);
         return commentMapper.toCommentResponseDto(itemService.createComment(comment));
     }
 }

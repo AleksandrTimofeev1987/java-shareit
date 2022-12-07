@@ -12,11 +12,11 @@ import ru.practicum.shareit.exception.model.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemUpdateDto;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.CommentEntity;
+import ru.practicum.shareit.item.model.ItemEntity;
 import ru.practicum.shareit.item.model.ItemWithBookingsAndComments;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.mapper.ItemMapper;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.validation.SearchValidator;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -43,7 +43,7 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemWithBookingsAndComments> getAllItemsByUserId(long userId) {
         log.debug("A list of all items owned by user with ID - {} is requested.", userId);
         validateUserExists(userId);
-        List<Item> items = itemRepository.findByOwnerId(userId);
+        List<ItemEntity> items = itemRepository.findByOwnerId(userId);
         List<ItemWithBookingsAndComments> itemsWithoutBookingsAndComments = items
                 .stream()
                 .map(this::mapItemToItemWithBookings)
@@ -62,7 +62,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemWithBookingsAndComments getItemById(long userId, long itemId) {
         log.debug("Item with ID - {} is requested.", itemId);
         validateUserExists(userId);
-        Optional<Item> itemOpt = itemRepository.findById(itemId);
+        Optional<ItemEntity> itemOpt = itemRepository.findById(itemId);
         validateItemExists(itemId, itemOpt);
 
         ItemWithBookingsAndComments itemWithoutBookingsAndComments = mapItemToItemWithBookings(itemOpt.get());
@@ -72,41 +72,41 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Item createItem(long userId, Item item) {
+    public ItemEntity createItem(long userId, ItemEntity item) {
         log.debug("Request to add item with name - {} is received.", item.getName());
         validateUserExists(userId);
         item.setOwnerId(userId);
-        Item addedItem = itemRepository.save(item);
+        ItemEntity addedItem = itemRepository.save(item);
         log.debug("Item with ID - {} is added to repository.", item.getId());
         return addedItem;
     }
 
     @Override
-    public Item updateItem(long userId, long itemId, ItemUpdateDto itemDto) {
+    public ItemEntity updateItem(long userId, long itemId, ItemUpdateDto itemDto) {
         log.debug("Request to update item with ID - {} is received.", itemId);
         validateUserExists(userId);
-        Optional<Item> itemOpt = itemRepository.findById(itemId);
+        Optional<ItemEntity> itemOpt = itemRepository.findById(itemId);
         validateItemExists(itemId, itemOpt);
-        Item itemForUpgrade = itemOpt.get();
+        ItemEntity itemForUpgrade = itemOpt.get();
 
         validateUserOwnItem(userId, itemForUpgrade);
 
-        mapper.itemFromItemUpdateDto(itemDto, itemForUpgrade);
+        mapper.toItemEntityFromItemUpdateDto(itemDto, itemForUpgrade);
 
-        Item updatedItem = itemRepository.save(itemForUpgrade);
+        ItemEntity updatedItem = itemRepository.save(itemForUpgrade);
         log.debug("Item with ID - {} is updated in repository.", itemId);
         return updatedItem;
     }
 
     @Override
-    public List<Item> searchItemsByText(long userId, String text) {
+    public List<ItemEntity> searchItemsByText(long userId, String text) {
         log.debug("A list of all items containing text ({}) in name or description is requested.", text);
         validateUserExists(userId);
         if (!SearchValidator.validateText(text)) {
             return new ArrayList<>();
         }
 
-        List<Item> items = itemRepository.searchItemsByText(text);
+        List<ItemEntity> items = itemRepository.searchItemsByText(text);
 
         log.debug("A list of all items containing text ({}) in name or description is received with size of {}.", text, items.size());
         return items;
@@ -124,7 +124,7 @@ public class ItemServiceImpl implements ItemService {
         return mapCommentEntityToComment(savedComment);
     }
 
-    private ItemWithBookingsAndComments mapItemToItemWithBookings(Item savedItem) {
+    private ItemWithBookingsAndComments mapItemToItemWithBookings(ItemEntity savedItem) {
         if (savedItem == null) {
             return null;
         }
@@ -189,7 +189,7 @@ public class ItemServiceImpl implements ItemService {
         }
     }
 
-    private void validateItemExists(long itemId, Optional<Item> itemOpt) {
+    private void validateItemExists(long itemId, Optional<ItemEntity> itemOpt) {
         if (!itemOpt.isPresent()) {
             throw new NotFoundException(String.format("Item with id: %d is not found", itemId));
         }
@@ -201,7 +201,7 @@ public class ItemServiceImpl implements ItemService {
         }
     }
 
-    private void validateUserOwnItem(long userId, Item itemForUpgrade) {
+    private void validateUserOwnItem(long userId, ItemEntity itemForUpgrade) {
         if (!itemForUpgrade.getOwnerId().equals(userId)) {
             throw new ForbiddenException(String.format("User with id: %d does not own item with id: %d", userId, itemForUpgrade.getId()));
         }

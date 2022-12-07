@@ -6,11 +6,12 @@ import ru.practicum.shareit.booking.dto.BookingCreateDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.BookingEntity;
-import ru.practicum.shareit.booking.model.RequestStatus;
+import ru.practicum.shareit.booking.model.RequestState;
 import ru.practicum.shareit.booking.service.BookingService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,7 +26,7 @@ public class BookingController {
 
     @GetMapping
     List<BookingResponseDto> getAllBookingsByBooker(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
-                                                    @RequestParam (required = false, defaultValue = "ALL") RequestStatus state) {
+                                                    @RequestParam (required = false, defaultValue = "ALL") RequestState state) {
         return bookingService.getAllBookingsByBooker(userId, state)
                 .stream()
                 .map(mapper::toBookingResponseDto)
@@ -34,7 +35,7 @@ public class BookingController {
 
     @GetMapping("/owner")
     List<BookingResponseDto> getAllBookingsByOwner(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
-                                                    @RequestParam (required = false, defaultValue = "ALL") RequestStatus state) {
+                                                    @RequestParam (required = false, defaultValue = "ALL") RequestState state) {
         return bookingService.getAllBookingsByOwner(userId, state)
                 .stream()
                 .map(mapper::toBookingResponseDto)
@@ -50,7 +51,7 @@ public class BookingController {
     @PostMapping
     BookingResponseDto createBooking(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                      @Valid @RequestBody BookingCreateDto bookingDto) {
-        BookingEntity booking = mapper.toBookingCreateFromBookingCreateDto(bookingDto, userId);
+        BookingEntity booking = mapper.toBookingEntity(bookingDto, userId);
 
         return mapper.toBookingResponseDto(bookingService.createBooking(userId, booking));
     }
@@ -58,7 +59,7 @@ public class BookingController {
     @PatchMapping("/{bookingId}")
     BookingResponseDto setBookingStatus(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                         @PathVariable @Min(1L) Long bookingId,
-                                        @RequestParam Boolean approved) {
+                                        @NotNull @RequestParam Boolean approved) {
         return mapper.toBookingResponseDto(bookingService.setBookingStatus(userId, bookingId, approved));
     }
 }

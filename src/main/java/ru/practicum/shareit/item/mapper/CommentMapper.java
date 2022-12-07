@@ -13,7 +13,7 @@ public interface CommentMapper {
 
     CommentResponseDto toCommentResponseDto(Comment comment);
 
-    default CommentEntity toCommentCreateFromCommentCreateDto(CommentCreateDto commentDto, long authorId, long itemId) {
+    default CommentEntity toCommentEntity(CommentCreateDto commentDto, long authorId, long itemId) {
         if (commentDto == null) {
             return null;
         }

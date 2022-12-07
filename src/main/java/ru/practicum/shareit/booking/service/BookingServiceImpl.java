@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingEntity;
 import ru.practicum.shareit.booking.model.BookingStatus;
-import ru.practicum.shareit.booking.model.RequestStatus;
+import ru.practicum.shareit.booking.model.RequestState;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.model.BadRequestException;
 import ru.practicum.shareit.exception.model.NotFoundException;
@@ -30,7 +30,7 @@ public class BookingServiceImpl implements BookingService {
     private final ItemRepository itemRepository;
 
     @Override
-    public List<Booking> getAllBookingsByBooker(Long userId, RequestStatus state) {
+    public List<Booking> getAllBookingsByBooker(Long userId, RequestState state) {
         log.debug("Request to get all bookings made by user with id - {} is received (state = {}).", userId, state);
         validateUserExists(userId);
 
@@ -64,7 +64,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<Booking> getAllBookingsByOwner(Long userId, RequestStatus state) {
+    public List<Booking> getAllBookingsByOwner(Long userId, RequestState state) {
         log.debug("Request to get all bookings for items owned by user with id - {} is received (state = {}).", userId, state);
         validateUserExists(userId);
         validateUserOwnItems(userId);
@@ -105,7 +105,7 @@ public class BookingServiceImpl implements BookingService {
         validateBookingExists(bookingId);
         validateUserOwnItemOrUserCreatedBooking(userId, bookingId);
 
-        BookingEntity savedBooking = bookingRepository.findByOwnerOrBooker(userId, bookingId);
+        BookingEntity savedBooking = bookingRepository.findOwnerIdOrBookerId(userId, bookingId);
         Booking result = mapBookingEntityToBooking(savedBooking);
         log.debug("Booking with ID - {} is found.", result.getId());
         return result;

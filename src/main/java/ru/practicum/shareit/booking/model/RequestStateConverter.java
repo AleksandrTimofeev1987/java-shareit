@@ -5,9 +5,9 @@ import javax.persistence.Converter;
 import java.util.stream.Stream;
 
 @Converter(autoApply = true)
-public class RequestStatusConverter implements AttributeConverter<RequestStatus, String> {
+public class RequestStateConverter implements AttributeConverter<RequestState, String> {
     @Override
-    public String convertToDatabaseColumn(RequestStatus requestStatus) {
+    public String convertToDatabaseColumn(RequestState requestStatus) {
         if (requestStatus == null) {
             return null;
         }
@@ -15,12 +15,12 @@ public class RequestStatusConverter implements AttributeConverter<RequestStatus,
     }
 
     @Override
-    public RequestStatus convertToEntityAttribute(String code) {
+    public RequestState convertToEntityAttribute(String code) {
         if (code == null) {
             return null;
         }
 
-        return Stream.of(RequestStatus.values())
+        return Stream.of(RequestState.values())
                 .filter(c -> c.getCode().equals(code))
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);

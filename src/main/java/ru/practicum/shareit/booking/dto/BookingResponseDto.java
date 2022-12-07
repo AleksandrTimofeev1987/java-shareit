@@ -3,8 +3,8 @@ package ru.practicum.shareit.booking.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.practicum.shareit.booking.model.BookingStatus;
-import ru.practicum.shareit.item.model.ItemShort;
-import ru.practicum.shareit.user.model.UserShort;
+import ru.practicum.shareit.item.dto.ItemShortDto;
+import ru.practicum.shareit.user.dto.UserShortDto;
 
 import java.time.LocalDateTime;
 
@@ -14,9 +14,9 @@ public class BookingResponseDto {
 
     private Long id;
 
-    private ItemShort item;
+    private ItemShortDto item;
 
-    private UserShort booker;
+    private UserShortDto booker;
 
     private LocalDateTime start;
 

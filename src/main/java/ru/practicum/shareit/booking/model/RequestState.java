@@ -1,6 +1,6 @@
 package ru.practicum.shareit.booking.model;
 
-public enum RequestStatus {
+public enum RequestState {
 
     WAITING("W"),
     REJECTED("R"),
@@ -11,7 +11,7 @@ public enum RequestStatus {
 
     private String code;
 
-    RequestStatus(String code) {
+    RequestState(String code) {
         this.code = code;
     }
 

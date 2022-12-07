@@ -11,7 +11,7 @@ import ru.practicum.shareit.booking.model.BookingStatus;
 public interface BookingMapper {
     BookingResponseDto toBookingResponseDto(Booking booking);
 
-    default BookingEntity toBookingCreateFromBookingCreateDto(BookingCreateDto bookingDto, long bookerId) {
+    default BookingEntity toBookingEntity(BookingCreateDto bookingDto, long bookerId) {
         if (bookingDto == null) {
             return null;
         }
