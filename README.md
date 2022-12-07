@@ -8,6 +8,8 @@ This application **can**:
 4. Receive items by ID.
 5. Receive all items belonging to user.
 6. Search items by text contained in item name or description. 
+7. Create bookings.
+8. Comment on items.
 
 Apllication is written on JAVA.
 ------
