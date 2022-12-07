@@ -5,17 +5,14 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "bookings", schema = "public")
-@Valid
 @Getter
 @Setter
 @ToString
-public class BookingCreate {
+public class BookingEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,13 +20,10 @@ public class BookingCreate {
     private Long id;
 
     @Column(name = "item_id", nullable = false)
-    @NotNull(message = "Booking should include item")
     private Long itemId;
 
     @Column(name = "booker_id", nullable = false)
-    @NotNull(message = "Booking should include booker")
     private Long bookerId;
-
 
     @Column(name = "start_date", nullable = false)
     private LocalDateTime start;

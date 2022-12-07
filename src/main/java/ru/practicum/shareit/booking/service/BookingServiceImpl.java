@@ -6,7 +6,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.model.BookingCreate;
+import ru.practicum.shareit.booking.model.BookingEntity;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.model.RequestStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
@@ -34,17 +34,17 @@ public class BookingServiceImpl implements BookingService {
         log.debug("Request to get all bookings made by user with id - {} is received (state = {}).", userId, state);
         validateUserExists(userId);
 
-        List<BookingCreate> foundBookings = new ArrayList<>();
+        List<BookingEntity> foundBookings = new ArrayList<>();
 
         switch (state) {
             case ALL:
                 foundBookings = bookingRepository.findByBookerId(userId, Sort.by(Sort.Direction.DESC, "start"));
                 break;
             case CURRENT:
-                foundBookings = bookingRepository.findByBookerIdAndEndIsBefore(userId, Sort.by(Sort.Direction.DESC, "start"), LocalDateTime.now());
+                foundBookings = bookingRepository.findByBookerIdAndStartIsBeforeAndEndIsAfter(userId, Sort.by(Sort.Direction.DESC, "start"), LocalDateTime.now(), LocalDateTime.now());
                 break;
             case PAST:
-                foundBookings = bookingRepository.findByBookerIdAndEndIsAfter(userId, Sort.by(Sort.Direction.DESC, "start"), LocalDateTime.now());
+                foundBookings = bookingRepository.findByBookerIdAndEndIsBefore(userId, Sort.by(Sort.Direction.DESC, "start"), LocalDateTime.now());
                 break;
             case FUTURE:
                 foundBookings = bookingRepository.findByBookerIdAndStartIsAfter(userId, Sort.by(Sort.Direction.DESC, "start"), LocalDateTime.now());
@@ -59,7 +59,7 @@ public class BookingServiceImpl implements BookingService {
 
         return foundBookings
                 .stream()
-                .map(this::mapBookingCreateToBooking)
+                .map(this::mapBookingEntityToBooking)
                 .collect(Collectors.toList());
     }
 
@@ -69,17 +69,17 @@ public class BookingServiceImpl implements BookingService {
         validateUserExists(userId);
         validateUserOwnItems(userId);
 
-        List<BookingCreate> foundBookings = new ArrayList<>();
+        List<BookingEntity> foundBookings = new ArrayList<>();
 
         switch (state) {
             case ALL:
                 foundBookings = bookingRepository.findAllByOwnerId(userId);
                 break;
             case CURRENT:
-                foundBookings = bookingRepository.findByOwnerIdAndEndIsBefore(userId, LocalDateTime.now());
+                foundBookings = bookingRepository.findByOwnerIdAndStartIsBeforeAndEndIsAfter(userId, LocalDateTime.now());
                 break;
             case PAST:
-                foundBookings = bookingRepository.findByOwnerIdAndEndIsAfter(userId, LocalDateTime.now());
+                foundBookings = bookingRepository.findByOwnerIdAndEndIsBefore(userId, LocalDateTime.now());
                 break;
             case FUTURE:
                 foundBookings = bookingRepository.findByOwnerIdAndStartIsAfter(userId, LocalDateTime.now());
@@ -94,7 +94,7 @@ public class BookingServiceImpl implements BookingService {
 
         return foundBookings
                 .stream()
-                .map(this::mapBookingCreateToBooking)
+                .map(this::mapBookingEntityToBooking)
                 .collect(Collectors.toList());
     }
 
@@ -105,14 +105,14 @@ public class BookingServiceImpl implements BookingService {
         validateBookingExists(bookingId);
         validateUserOwnItemOrUserCreatedBooking(userId, bookingId);
 
-        BookingCreate savedBooking = bookingRepository.findByOwnerOrBooker(userId, bookingId);
-        Booking result = mapBookingCreateToBooking(savedBooking);
+        BookingEntity savedBooking = bookingRepository.findByOwnerOrBooker(userId, bookingId);
+        Booking result = mapBookingEntityToBooking(savedBooking);
         log.debug("Booking with ID - {} is found.", result.getId());
         return result;
     }
 
     @Override
-    public Booking createBooking(Long userId, BookingCreate booking) {
+    public Booking createBooking(Long userId, BookingEntity booking) {
         log.debug("Request to add booking for item with id - {} is received.", booking.getItemId());
         validateUserExists(userId);
         validateItemExists(booking.getItemId());
@@ -120,8 +120,8 @@ public class BookingServiceImpl implements BookingService {
         validateItemAvailable(booking.getItemId());
         validateUserIsNotItemOwner(userId, booking.getItemId());
 
-        BookingCreate savedBooking = bookingRepository.save(booking);
-        Booking result = mapBookingCreateToBooking(savedBooking);
+        BookingEntity savedBooking = bookingRepository.save(booking);
+        Booking result = mapBookingEntityToBooking(savedBooking);
         log.debug("Booking with ID - {} is added to repository.", result.getId());
         return result;
     }
@@ -134,7 +134,7 @@ public class BookingServiceImpl implements BookingService {
         validateBookingExists(bookingId);
         validateUserOwnItem(userId, bookingId);
 
-        BookingCreate savedBooking = bookingRepository.findById(bookingId).get();
+        BookingEntity savedBooking = bookingRepository.findById(bookingId).get();
 
         if (approved) {
             validateBookingIsNotApproved(bookingId);
@@ -143,15 +143,15 @@ public class BookingServiceImpl implements BookingService {
             savedBooking.setStatus(BookingStatus.REJECTED);
         }
 
-        BookingCreate updatedBooking = bookingRepository.save(savedBooking);
+        BookingEntity updatedBooking = bookingRepository.save(savedBooking);
 
 
-        Booking result = mapBookingCreateToBooking(updatedBooking);
+        Booking result = mapBookingEntityToBooking(updatedBooking);
         log.debug("Booking with ID - {} is {}", result.getId(), result.getStatus().toString());
         return result;
     }
 
-    private Booking mapBookingCreateToBooking(BookingCreate savedBooking) {
+    private Booking mapBookingEntityToBooking(BookingEntity savedBooking) {
         if (savedBooking == null) {
             return null;
         }
@@ -186,7 +186,7 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    private void validateStartBeforeEnd(BookingCreate booking) {
+    private void validateStartBeforeEnd(BookingEntity booking) {
         if (booking.getEnd().isBefore(booking.getStart())) {
             throw new BadRequestException("Booking end should not be before booking end");
         }

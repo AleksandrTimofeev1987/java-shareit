@@ -1,7 +1,10 @@
 package ru.practicum.shareit.item.service;
 
 import ru.practicum.shareit.item.dto.ItemUpdateDto;
+import ru.practicum.shareit.item.model.Comment;
+import ru.practicum.shareit.item.model.CommentEntity;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.model.ItemWithBookingsAndComments;
 
 import java.util.List;
 
@@ -13,7 +16,7 @@ public interface ItemService {
      * @param userId - ID of user - owner of items.
      * @return - List of items owned by user.
      */
-    List<Item> getAllItemsByUserId(long userId);
+    List<ItemWithBookingsAndComments> getAllItemsByUserId(long userId);
 
     /**
      * Method returns item by ID.
@@ -22,7 +25,7 @@ public interface ItemService {
      * @param itemId - ID of item requested.
      * @return - Item with requested ID.
      */
-    Item getItemById(long userId, long itemId);
+    ItemWithBookingsAndComments getItemById(long userId, long itemId);
 
     /**
      * Method adds item to repository.
@@ -52,4 +55,13 @@ public interface ItemService {
      * @return - List of items containing text in name or description.
      */
     List<Item> searchItemsByText(long userId, String text);
+
+    /**
+     * Method creates comment to item.
+     *
+     * @param comment - comment to be created.
+     *
+     * @return - created comment.
+     */
+    Comment createComment(CommentEntity comment);
 }

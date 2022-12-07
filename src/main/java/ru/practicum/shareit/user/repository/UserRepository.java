@@ -10,4 +10,10 @@ import ru.practicum.shareit.user.model.UserShort;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     UserShort getUserShortById(Long bookerId);
+
+    @Query(value = "" +
+            "SELECT u.name " +
+            "FROM User AS u " +
+            "WHERE u.id = ?1")
+    String getUserNameById(Long authorId);
 }
