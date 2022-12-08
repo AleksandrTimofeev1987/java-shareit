@@ -35,19 +35,20 @@ public class BookingServiceImpl implements BookingService {
         validateUserExists(userId);
 
         List<BookingEntity> foundBookings = new ArrayList<>();
+        LocalDateTime now = LocalDateTime.now();
 
         switch (state) {
             case ALL:
                 foundBookings = bookingRepository.findByBookerId(userId, Sort.by(Sort.Direction.DESC, "start"));
                 break;
             case CURRENT:
-                foundBookings = bookingRepository.findByBookerIdAndStartIsBeforeAndEndIsAfter(userId, Sort.by(Sort.Direction.DESC, "start"), LocalDateTime.now(), LocalDateTime.now());
+                foundBookings = bookingRepository.findByBookerIdAndStartIsBeforeAndEndIsAfter(userId, Sort.by(Sort.Direction.DESC, "start"), now, now);
                 break;
             case PAST:
-                foundBookings = bookingRepository.findByBookerIdAndEndIsBefore(userId, Sort.by(Sort.Direction.DESC, "start"), LocalDateTime.now());
+                foundBookings = bookingRepository.findByBookerIdAndEndIsBefore(userId, Sort.by(Sort.Direction.DESC, "start"), now);
                 break;
             case FUTURE:
-                foundBookings = bookingRepository.findByBookerIdAndStartIsAfter(userId, Sort.by(Sort.Direction.DESC, "start"), LocalDateTime.now());
+                foundBookings = bookingRepository.findByBookerIdAndStartIsAfter(userId, Sort.by(Sort.Direction.DESC, "start"), now);
                 break;
             case WAITING:
                 foundBookings = bookingRepository.findByBookerIdAndStatus(userId, Sort.by(Sort.Direction.DESC, "start"), BookingStatus.WAITING);
@@ -70,19 +71,20 @@ public class BookingServiceImpl implements BookingService {
         validateUserOwnItems(userId);
 
         List<BookingEntity> foundBookings = new ArrayList<>();
+        LocalDateTime now = LocalDateTime.now();
 
         switch (state) {
             case ALL:
                 foundBookings = bookingRepository.findAllByOwnerId(userId);
                 break;
             case CURRENT:
-                foundBookings = bookingRepository.findByOwnerIdAndStartIsBeforeAndEndIsAfter(userId, LocalDateTime.now());
+                foundBookings = bookingRepository.findByOwnerIdAndStartIsBeforeAndEndIsAfter(userId, now);
                 break;
             case PAST:
-                foundBookings = bookingRepository.findByOwnerIdAndEndIsBefore(userId, LocalDateTime.now());
+                foundBookings = bookingRepository.findByOwnerIdAndEndIsBefore(userId, now);
                 break;
             case FUTURE:
-                foundBookings = bookingRepository.findByOwnerIdAndStartIsAfter(userId, LocalDateTime.now());
+                foundBookings = bookingRepository.findByOwnerIdAndStartIsAfter(userId, now);
                 break;
             case WAITING:
                 foundBookings = bookingRepository.findByItemOwnerIdAndStatus(userId, BookingStatus.WAITING.getCode());

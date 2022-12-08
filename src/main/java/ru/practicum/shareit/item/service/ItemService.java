@@ -16,7 +16,7 @@ public interface ItemService {
      * @param userId - ID of user - owner of items.
      * @return - List of items owned by user.
      */
-    List<ItemWithBookingsAndComments> getAllItemsByUserId(long userId);
+    List<ItemWithBookingsAndComments> getAllItemsByUserId(Long userId);
 
     /**
      * Method returns item by ID.
@@ -25,7 +25,7 @@ public interface ItemService {
      * @param itemId - ID of item requested.
      * @return - Item with requested ID.
      */
-    ItemWithBookingsAndComments getItemById(long userId, long itemId);
+    ItemWithBookingsAndComments getItemById(Long userId, Long itemId);
 
     /**
      * Method adds item to repository.
@@ -34,7 +34,7 @@ public interface ItemService {
      * @param item - Item to be added.
      * @return - Added item with assigned ID.
      */
-    ItemEntity createItem(long userId, ItemEntity item);
+    ItemEntity createItem(Long userId, ItemEntity item);
 
     /**
      * Method updates item in repository.
@@ -44,7 +44,7 @@ public interface ItemService {
      * @param itemDto - Item to be updated.
      * @return - Updated item with assigned ID.
      */
-    ItemEntity updateItem(long userId, long itemId, ItemUpdateDto itemDto);
+    ItemEntity updateItem(Long userId, Long itemId, ItemUpdateDto itemDto);
 
     /**
      * Method returns list of items containing certain text in name or description.
@@ -54,7 +54,7 @@ public interface ItemService {
      *
      * @return - List of items containing text in name or description.
      */
-    List<ItemEntity> searchItemsByText(long userId, String text);
+    List<ItemEntity> searchItemsByText(Long userId, String text);
 
     /**
      * Method creates comment to item.

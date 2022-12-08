@@ -40,7 +40,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ItemWithBookingsAndComments> getAllItemsByUserId(long userId) {
+    public List<ItemWithBookingsAndComments> getAllItemsByUserId(Long userId) {
         log.debug("A list of all items owned by user with ID - {} is requested.", userId);
         validateUserExists(userId);
         List<ItemEntity> items = itemRepository.findByOwnerId(userId);
@@ -59,7 +59,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemWithBookingsAndComments getItemById(long userId, long itemId) {
+    public ItemWithBookingsAndComments getItemById(Long userId, Long itemId) {
         log.debug("Item with ID - {} is requested.", itemId);
         validateUserExists(userId);
         Optional<ItemEntity> itemOpt = itemRepository.findById(itemId);
@@ -72,7 +72,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemEntity createItem(long userId, ItemEntity item) {
+    public ItemEntity createItem(Long userId, ItemEntity item) {
         log.debug("Request to add item with name - {} is received.", item.getName());
         validateUserExists(userId);
         item.setOwnerId(userId);
@@ -82,7 +82,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemEntity updateItem(long userId, long itemId, ItemUpdateDto itemDto) {
+    public ItemEntity updateItem(Long userId, Long itemId, ItemUpdateDto itemDto) {
         log.debug("Request to update item with ID - {} is received.", itemId);
         validateUserExists(userId);
         Optional<ItemEntity> itemOpt = itemRepository.findById(itemId);
@@ -99,7 +99,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemEntity> searchItemsByText(long userId, String text) {
+    public List<ItemEntity> searchItemsByText(Long userId, String text) {
         log.debug("A list of all items containing text ({}) in name or description is requested.", text);
         validateUserExists(userId);
         if (!SearchValidator.validateText(text)) {
@@ -162,14 +162,24 @@ public class ItemServiceImpl implements ItemService {
 
     private void setItemLastAndNextBooking(ItemWithBookingsAndComments item) {
         List<BookingShort> allBookingByItemId = bookingRepository.findByItemId(item.getId());
+        LocalDateTime now = LocalDateTime.now();
+
+        setItemLastBooking(item, allBookingByItemId, now);
+
+        setItemNextBooking(item, allBookingByItemId, now);
+    }
+
+    private static void setItemLastBooking(ItemWithBookingsAndComments item, List<BookingShort> allBookingByItemId, LocalDateTime now) {
         item.setLastBooking(allBookingByItemId
                 .stream()
-                .filter(booking -> booking.getEnd().isBefore(LocalDateTime.now()))
+                .filter(booking -> booking.getEnd().isBefore(now))
                 .max(Comparator.comparing(BookingShort::getEnd)).orElse(null));
+    }
 
+    private static void setItemNextBooking(ItemWithBookingsAndComments item, List<BookingShort> allBookingByItemId, LocalDateTime now) {
         item.setNextBooking(allBookingByItemId
                 .stream()
-                .filter(booking -> booking.getStart().isAfter(LocalDateTime.now()))
+                .filter(booking -> booking.getStart().isAfter(now))
                 .min(Comparator.comparing(BookingShort::getEnd)).orElse(null));
     }
 
@@ -183,35 +193,35 @@ public class ItemServiceImpl implements ItemService {
         return itemWithoutComments;
     }
 
-    private void validateUserExists(long userId) {
+    private void validateUserExists(Long userId) {
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException(String.format("User with id: %d is not found", userId));
         }
     }
 
-    private void validateItemExists(long itemId, Optional<ItemEntity> itemOpt) {
+    private void validateItemExists(Long itemId, Optional<ItemEntity> itemOpt) {
         if (!itemOpt.isPresent()) {
             throw new NotFoundException(String.format("Item with id: %d is not found", itemId));
         }
     }
 
-    private void validateItemExistsInDB(long itemId) {
+    private void validateItemExistsInDB(Long itemId) {
         if (!itemRepository.existsById(itemId)) {
             throw new NotFoundException(String.format("Item with id: %d is not found", itemId));
         }
     }
 
-    private void validateUserOwnItem(long userId, ItemEntity itemForUpgrade) {
+    private void validateUserOwnItem(Long userId, ItemEntity itemForUpgrade) {
         if (!itemForUpgrade.getOwnerId().equals(userId)) {
             throw new ForbiddenException(String.format("User with id: %d does not own item with id: %d", userId, itemForUpgrade.getId()));
         }
     }
 
-    private boolean checkUserIsOwner(long userId, ItemWithBookingsAndComments itemWithoutBookings) {
+    private boolean checkUserIsOwner(Long userId, ItemWithBookingsAndComments itemWithoutBookings) {
         return itemWithoutBookings.getOwnerId().equals(userId);
     }
 
-    private void validateUserBookedItemAndBookingEnded(long authorId, long itemId) {
+    private void validateUserBookedItemAndBookingEnded(Long authorId, Long itemId) {
         if (bookingRepository.findByBookerIdItemIdAndPast(authorId, itemId, LocalDateTime.now()).size() < 1) {
             throw new BadRequestException("Comment cannot be published for unfinished or future booking");
         }

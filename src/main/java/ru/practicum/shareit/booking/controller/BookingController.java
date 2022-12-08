@@ -25,7 +25,7 @@ public class BookingController {
     private static final String REQUEST_HEADER_USER_ID_TITLE = "X-Sharer-User-Id";
 
     @GetMapping
-    List<BookingResponseDto> getAllBookingsByBooker(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
+    public List<BookingResponseDto> getAllBookingsByBooker(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                                     @RequestParam (required = false, defaultValue = "ALL") RequestState state) {
         return bookingService.getAllBookingsByBooker(userId, state)
                 .stream()
@@ -34,7 +34,7 @@ public class BookingController {
     }
 
     @GetMapping("/owner")
-    List<BookingResponseDto> getAllBookingsByOwner(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
+    public List<BookingResponseDto> getAllBookingsByOwner(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                                     @RequestParam (required = false, defaultValue = "ALL") RequestState state) {
         return bookingService.getAllBookingsByOwner(userId, state)
                 .stream()
@@ -43,13 +43,13 @@ public class BookingController {
     }
 
     @GetMapping("/{bookingId}")
-    BookingResponseDto getBookingById(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
+    public BookingResponseDto getBookingById(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                       @PathVariable @Min(1L) Long bookingId) {
         return mapper.toBookingResponseDto(bookingService.getBookingById(userId, bookingId));
     }
 
     @PostMapping
-    BookingResponseDto createBooking(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
+    public BookingResponseDto createBooking(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                      @Valid @RequestBody BookingCreateDto bookingDto) {
         BookingEntity booking = mapper.toBookingEntity(bookingDto, userId);
 
@@ -57,7 +57,7 @@ public class BookingController {
     }
 
     @PatchMapping("/{bookingId}")
-    BookingResponseDto setBookingStatus(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
+    public BookingResponseDto setBookingStatus(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                         @PathVariable @Min(1L) Long bookingId,
                                         @NotNull @RequestParam Boolean approved) {
         return mapper.toBookingResponseDto(bookingService.setBookingStatus(userId, bookingId, approved));

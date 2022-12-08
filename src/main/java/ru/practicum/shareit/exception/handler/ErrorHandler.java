@@ -34,7 +34,7 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ErrorResponse handleIllegalRequestState(final MethodArgumentTypeMismatchException e) {
-        String error = "Unknown state: UNSUPPORTED_STATUS";
+        String error = "Unknown " + e.getName() + ": " + e.getValue();
         log.warn(error);
         return new ErrorResponse(error);
     }
@@ -49,7 +49,7 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ErrorResponse handleMissingRequestHeader(final MissingRequestHeaderException e) {
-        String error = "Missing request header 'X-Sharer-User-Id'";
+        String error = "Missing request header: " + e.getHeaderName();
         log.warn(error);
         return new ErrorResponse(error);
     }
@@ -57,9 +57,8 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ErrorResponse handleMissingRequestParameter(final MissingRequestValueException e) {
-        String error = "Missing request parameter";
-        log.warn(error);
-        return new ErrorResponse(error);
+        log.warn(e.getMessage());
+        return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
