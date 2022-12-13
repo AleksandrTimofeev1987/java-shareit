@@ -10,7 +10,7 @@ import javax.validation.constraints.NotBlank;
 @Data
 @AllArgsConstructor
 @Valid
-public class UserCreateRequest {
+public class UserCreateDto {
 
     private Long id;
 

@@ -1,61 +1,19 @@
 package ru.practicum.shareit.user.repository;
 
-import ru.practicum.shareit.request.model.User;
-import ru.practicum.shareit.user.dto.UpdateUserDto;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+import ru.practicum.shareit.user.model.UserEntity;
+import ru.practicum.shareit.user.model.UserShort;
 
-import java.util.List;
+@Repository
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
-public interface UserRepository {
-    /**
-     * Method returns all users.
-     *
-     * @return - List of all users.
-     */
-    List<User> getAllUsers();
+    UserShort getUserShortById(Long bookerId);
 
-    /**
-     * Method returns user by ID.
-     *
-     * @param id - User ID.
-     * @return - User with requested ID.
-     */
-    User getUserById(Long id);
-
-    /**
-     * Method adds user to repository.
-     *
-     * @param user - User to be added.
-     * @return - Added user with assigned ID.
-     */
-    User createUser(User user);
-
-    /**
-     * Method updates user in repository.
-     *
-     * @param id - ID of user to be updated.
-     * @param user - User to be updated.
-     * @return - Updated user.
-     */
-    User updateUser(Long id, UpdateUserDto user);
-
-    /**
-     * Method deletes user in repository.
-     *
-     * @param id - ID of user to be deleted.
-     */
-    void deleteUser(Long id);
-
-    /**
-     * Method checks if user exists by id.
-     *
-     * @param id - ID of user to be validated.
-     */
-    void validateUserExists(Long id);
-
-    /**
-     * Method checks if user email is distinct.
-     *
-     * @param email - email of user to be validated.
-     */
-    void validateUserEmail(String email);
+    @Query(value = "" +
+            "SELECT u.name " +
+            "FROM UserEntity AS u " +
+            "WHERE u.id = ?1")
+    String getUserNameById(Long authorId);
 }

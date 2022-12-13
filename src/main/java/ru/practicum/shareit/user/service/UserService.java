@@ -1,43 +1,42 @@
 package ru.practicum.shareit.user.service;
 
-import ru.practicum.shareit.user.dto.UpdateUserDto;
-import ru.practicum.shareit.user.dto.UserCreateRequest;
-import ru.practicum.shareit.user.dto.UserResponse;
+import ru.practicum.shareit.user.dto.UserUpdateDto;
+import ru.practicum.shareit.user.model.UserEntity;
 
 import java.util.List;
 
 public interface UserService {
     /**
-     * Method returns all users (DTO).
+     * Method returns all users.
      *
-     * @return - List of all users (DTO).
+     * @return - List of all users.
      */
-    List<UserResponse> getAllUsers();
+    List<UserEntity> getAllUsers();
 
     /**
-     * Method returns user (DTO) by ID.
+     * Method returns user by ID.
      *
      * @param id - User ID.
-     * @return - User (DTO) with requested ID.
+     * @return - User with requested ID.
      */
-    UserResponse getUserById(Long id);
+    UserEntity getUserById(Long id);
 
     /**
      * Method adds user to repository.
      *
-     * @param user - User (DTO) to be added.
-     * @return - Added user (DTO) with assigned ID.
+     * @param user - User to be added.
+     * @return - Added user with assigned ID.
      */
-    UserResponse createUser(UserCreateRequest user);
+    UserEntity createUser(UserEntity user);
 
     /**
      * Method updates user in repository.
      *
      * @param id - ID of user to be updated.
-     * @param user - User (DTO) to be updated.
-     * @return - Updated user (DTO).
+     * @param userDto - User to be updated.
+     * @return - Updated user.
      */
-    UserResponse updateUser(Long id, UpdateUserDto user);
+    UserEntity updateUser(Long id, UserUpdateDto userDto);
 
     /**
      * Method deletes user in repository.

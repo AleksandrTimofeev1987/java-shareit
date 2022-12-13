@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.model;
+package ru.practicum.shareit.item.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +11,8 @@ import javax.validation.constraints.Size;
 @Data
 @AllArgsConstructor
 @Valid
-public class Item {
+public class ItemCreateDto {
+
     private Long id;
 
     @NotBlank (message = "Item name should not be Null or Blank")
