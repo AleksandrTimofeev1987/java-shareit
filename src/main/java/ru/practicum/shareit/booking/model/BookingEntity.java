@@ -1,6 +1,5 @@
 package ru.practicum.shareit.booking.model;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -13,7 +12,6 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
 public class BookingEntity {
 
     @Id
@@ -35,4 +33,16 @@ public class BookingEntity {
 
     @Column(name = "status", nullable = false)
     private BookingStatus status;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof BookingEntity)) return false;
+        return id != null && id.equals(((BookingEntity) o).getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

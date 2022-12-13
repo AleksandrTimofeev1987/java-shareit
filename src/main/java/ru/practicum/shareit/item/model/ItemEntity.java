@@ -9,7 +9,6 @@ import javax.persistence.*;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode
 public class ItemEntity {
 
     @Id
@@ -28,4 +27,16 @@ public class ItemEntity {
 
     @Column(name = "available", nullable = false)
     private Boolean available;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ItemEntity)) return false;
+        return id != null && id.equals(((ItemEntity) o).getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }
