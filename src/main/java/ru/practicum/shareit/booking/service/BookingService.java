@@ -1,8 +1,7 @@
 package ru.practicum.shareit.booking.service;
 
-import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.model.BookingEntity;
-import ru.practicum.shareit.booking.model.RequestState;
+import ru.practicum.shareit.booking.entity.Booking;
+import ru.practicum.shareit.booking.entity.RequestState;
 
 import java.util.List;
 
@@ -42,7 +41,7 @@ public interface BookingService {
      * @param booking - Booking to be added.
      * @return - Added booking with assigned ID.
      */
-    Booking createBooking(Long userId, BookingEntity booking);
+    Booking createBooking(Long userId, Booking booking);
 
     /**
      * Method updates booking status in repository. Can be done only by item owner.

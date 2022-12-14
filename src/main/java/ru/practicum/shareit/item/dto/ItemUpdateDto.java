@@ -16,8 +16,5 @@ public class ItemUpdateDto {
 
     private String description;
 
-    @Null
-    private Long ownerId;
-
     private Boolean available;
 }

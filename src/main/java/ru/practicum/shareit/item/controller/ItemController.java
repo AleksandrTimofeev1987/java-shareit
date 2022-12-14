@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
-import ru.practicum.shareit.item.model.CommentEntity;
-import ru.practicum.shareit.item.model.ItemEntity;
+import ru.practicum.shareit.item.entity.Comment;
+import ru.practicum.shareit.item.entity.Item;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
@@ -25,23 +25,20 @@ public class ItemController {
     private static final String REQUEST_HEADER_USER_ID_TITLE = "X-Sharer-User-Id";
 
     @GetMapping
-    public List<ItemResponseWithBookingsAndCommentsDto> getAllItemsByUserId(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId) {
-        return itemService.getAllItemsByUserId(userId)
-                .stream()
-                .map(itemMapper::toItemResponseWithBookingsAndCommentsDto)
-                .collect(Collectors.toList());
+    public List<ItemResponseDto> getAllItemsByUserId(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId) {
+        return itemService.getAllItemsByUserId(userId);
     }
 
     @GetMapping("/{itemId}")
-    public ItemResponseWithBookingsAndCommentsDto getItemById(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
-                                                              @Min(1L) @PathVariable Long itemId) {
-        return itemMapper.toItemResponseWithBookingsAndCommentsDto(itemService.getItemById(userId, itemId));
+    public ItemResponseDto getItemById(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
+                                       @Min(1L) @PathVariable Long itemId) {
+        return itemService.getItemById(userId, itemId);
     }
 
     @PostMapping
     public ItemResponseDto createItem(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                       @Valid @RequestBody ItemCreateDto itemDto) {
-        ItemEntity item = itemMapper.toItemEntity(itemDto);
+        Item item = itemMapper.toItem(itemDto);
         return itemMapper.toItemResponseDto(itemService.createItem(userId, item));
     }
 
@@ -65,7 +62,7 @@ public class ItemController {
     public CommentResponseDto createComment(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                             @Min(1L) @PathVariable Long itemId,
                                             @Valid @RequestBody CommentCreateDto commentDto) {
-        CommentEntity comment = commentMapper.toCommentEntity(commentDto, userId, itemId);
-        return commentMapper.toCommentResponseDto(itemService.createComment(comment));
+        Comment comment = commentMapper.toComment(commentDto);
+        return commentMapper.toCommentResponseDto(itemService.createComment(userId, itemId, comment));
     }
 }

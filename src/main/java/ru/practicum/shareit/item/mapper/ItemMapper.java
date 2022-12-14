@@ -2,23 +2,15 @@ package ru.practicum.shareit.item.mapper;
 
 import org.mapstruct.*;
 import ru.practicum.shareit.item.dto.*;
-import ru.practicum.shareit.item.model.ItemEntity;
-import ru.practicum.shareit.item.model.ItemShort;
-import ru.practicum.shareit.item.model.ItemWithBookingsAndComments;
+import ru.practicum.shareit.item.entity.Item;
 
 @Mapper(componentModel = "spring")
 public interface ItemMapper {
 
-    ItemResponseDto toItemResponseDto(ItemEntity item);
+    ItemResponseDto toItemResponseDto(Item item);
 
-    ItemResponseWithBookingsAndCommentsDto toItemResponseWithBookingsAndCommentsDto(ItemWithBookingsAndComments item);
-
-    ItemEntity toItemEntity(ItemCreateDto itemDto);
-
-    ItemShortDto toItemShortDto(ItemShort item);
+    Item toItem(ItemCreateDto itemDto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void toItemEntityFromItemUpdateDto(ItemUpdateDto itemDto, @MappingTarget ItemEntity item);
-
-
+    void toItemFromItemUpdateDto(ItemUpdateDto itemDto, @MappingTarget Item item);
 }

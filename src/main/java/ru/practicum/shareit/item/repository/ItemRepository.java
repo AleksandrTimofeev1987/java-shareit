@@ -3,41 +3,31 @@ package ru.practicum.shareit.item.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.item.model.ItemEntity;
-import ru.practicum.shareit.item.model.ItemShort;
+import ru.practicum.shareit.item.entity.Item;
 
 import java.util.List;
 
 @Repository
-public interface ItemRepository extends JpaRepository<ItemEntity, Long> {
-
-    List<ItemEntity> findByOwnerId(Long ownerId);
+public interface ItemRepository extends JpaRepository<Item, Long> {
+    List<Item> findByOwnerId(Long userId);
 
     @Query(value = "" +
             "SELECT i " +
-            "FROM ItemEntity AS i " +
-            "WHERE LOWER (i.name) LIKE LOWER(CONCAT('%', ?1, '%')) " +
-            "OR LOWER (i.description) LIKE LOWER(CONCAT('%', ?1, '%'))" +
+            "FROM Item i " +
+            "WHERE (UPPER(i.name) LIKE UPPER(CONCAT('%', ?1, '%')) " +
+            "OR UPPER(i.description) LIKE UPPER(CONCAT('%', ?1, '%'))) " +
             "AND i.available = true")
-    List<ItemEntity> searchItemsByText(String text);
+    List<Item> searchByNameOrDescription(String text);
 
     @Query(value = "" +
             "SELECT i.available " +
-            "FROM ItemEntity AS i " +
+            "FROM Item AS i " +
             "WHERE i.id = ?1")
     boolean getItemAvailability(Long itemId);
 
-    ItemShort getItemShortById(Long itemId);
-
-    @Query(value = "" +
-            "SELECT i.ownerId " +
-            "FROM ItemEntity AS i " +
-            "WHERE i.id = ?1")
-    Long getItemOwnerId(Long itemId);
-
     @Query(value = "" +
             "SELECT COUNT(i) " +
-            "FROM ItemEntity AS i " +
-            "WHERE i.ownerId = ?1")
+            "FROM Item AS i " +
+            "WHERE i.owner.id = ?1")
     Long countItemsOwnedByUser(Long userId);
 }

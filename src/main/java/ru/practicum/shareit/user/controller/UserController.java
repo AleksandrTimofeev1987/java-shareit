@@ -6,7 +6,7 @@ import ru.practicum.shareit.user.dto.UserResponseDto;
 import ru.practicum.shareit.user.dto.UserUpdateDto;
 import ru.practicum.shareit.user.dto.UserCreateDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
-import ru.practicum.shareit.user.model.UserEntity;
+import ru.practicum.shareit.user.entity.User;
 import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Valid;
@@ -37,7 +37,7 @@ public class UserController {
 
     @PostMapping
     public UserResponseDto createUser(@Valid @RequestBody UserCreateDto userDto) {
-        UserEntity user = mapper.toUserEntity(userDto);
+        User user = mapper.toUserEntity(userDto);
         return mapper.toUserResponseDto(userService.createUser(user));
     }
 

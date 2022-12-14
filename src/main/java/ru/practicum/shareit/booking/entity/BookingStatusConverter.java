@@ -1,4 +1,4 @@
-package ru.practicum.shareit.booking.model;
+package ru.practicum.shareit.booking.entity;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;

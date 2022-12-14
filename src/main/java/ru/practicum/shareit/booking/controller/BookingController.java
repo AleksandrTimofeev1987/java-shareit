@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingCreateDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
-import ru.practicum.shareit.booking.model.BookingEntity;
-import ru.practicum.shareit.booking.model.RequestState;
+import ru.practicum.shareit.booking.entity.Booking;
+import ru.practicum.shareit.booking.entity.RequestState;
 import ru.practicum.shareit.booking.service.BookingService;
 
 import javax.validation.Valid;
@@ -51,7 +51,7 @@ public class BookingController {
     @PostMapping
     public BookingResponseDto createBooking(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                      @Valid @RequestBody BookingCreateDto bookingDto) {
-        BookingEntity booking = mapper.toBookingEntity(bookingDto, userId);
+        Booking booking = mapper.toBooking(bookingDto);
 
         return mapper.toBookingResponseDto(bookingService.createBooking(userId, booking));
     }
