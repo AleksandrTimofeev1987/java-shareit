@@ -22,8 +22,6 @@ public class ItemCreateDto {
     @Size(max = 200, message = "Maximum length of item description is 200 symbols")
     private String description;
 
-    private Long ownerId;
-
     @NotNull (message = "Item availability should not be Null")
     private Boolean available;
 }

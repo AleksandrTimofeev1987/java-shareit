@@ -1,21 +1,17 @@
 package ru.practicum.shareit.user.mapper;
 
 import org.mapstruct.*;
-import ru.practicum.shareit.user.dto.UserShortDto;
 import ru.practicum.shareit.user.dto.UserUpdateDto;
-import ru.practicum.shareit.user.model.UserEntity;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.dto.UserCreateDto;
 import ru.practicum.shareit.user.dto.UserResponseDto;
-import ru.practicum.shareit.user.model.UserShort;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-    UserResponseDto toUserResponseDto(UserEntity user);
+    UserResponseDto toUserResponseDto(User user);
 
-    UserEntity toUserEntity(UserCreateDto userDto);
-
-    UserShortDto toUserShortDto(UserShort user);
+    User toUserEntity(UserCreateDto userDto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void toUserEntityFromUserUpdateDto(UserUpdateDto userDto, @MappingTarget UserEntity user);
+    void toUserFromUserUpdateDto(UserUpdateDto userDto, @MappingTarget User user);
 }

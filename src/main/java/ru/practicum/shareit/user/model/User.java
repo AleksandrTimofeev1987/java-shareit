@@ -9,11 +9,11 @@ import javax.persistence.*;
 @Getter
 @Setter
 @ToString
-public class UserEntity {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id", nullable = false)
+    @Column(name = "user_id", nullable = false, updatable = false, unique = true)
     private Long id;
 
     @Column(name = "name", nullable = false)
@@ -25,8 +25,8 @@ public class UserEntity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof UserEntity)) return false;
-        return id != null && id.equals(((UserEntity) o).getId());
+        if (!(o instanceof User)) return false;
+        return id != null && id.equals(((User) o).getId());
     }
 
     @Override

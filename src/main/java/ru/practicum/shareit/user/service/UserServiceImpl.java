@@ -7,11 +7,10 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.model.NotFoundException;
 import ru.practicum.shareit.user.dto.UserUpdateDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
-import ru.practicum.shareit.user.model.UserEntity;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,43 +22,40 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserEntity> getAllUsers() {
+    public List<User> getAllUsers() {
         log.debug("A list of all users is requested.");
-        List<UserEntity> allUsers = userRepository.findAll();
+        List<User> allUsers = userRepository.findAll();
         log.debug("A list of all users is received from repository with size of {}.", allUsers.size());
         return allUsers;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public UserEntity getUserById(Long id) {
+    public User getUserById(Long id) {
         log.debug("User with ID - {} is requested.", id);
-        Optional<UserEntity> userOpt = userRepository.findById(id);
-        validateUserExists(id, userOpt);
+        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException(String.format("User with id: %d is not found", id)));
         log.debug("User with ID - {} is received from repository.", id);
-        return userOpt.get();
+        return user;
     }
 
     @Override
     @Transactional
-    public UserEntity createUser(UserEntity user) {
+    public User createUser(User user) {
         log.debug("Request to add user with name - {} is received.", user.getName());
-        UserEntity addedUser = userRepository.save(user);
+        User addedUser = userRepository.save(user);
         log.debug("User with ID - {} is added to repository.", addedUser.getId());
         return addedUser;
     }
 
     @Override
     @Transactional
-    public UserEntity updateUser(Long id, UserUpdateDto userDto) {
+    public User updateUser(Long id, UserUpdateDto userDto) {
 
         log.debug("Request to update user with ID - {} is received.", id);
-        Optional<UserEntity> userOpt = userRepository.findById(id);
-        validateUserExists(id, userOpt);
-        UserEntity userForUpgrade = userOpt.get();
-        mapper.toUserEntityFromUserUpdateDto(userDto, userForUpgrade);
+        User userForUpgrade = userRepository.findById(id).orElseThrow(() -> new NotFoundException(String.format("User with id: %d is not found", id)));
+        mapper.toUserFromUserUpdateDto(userDto, userForUpgrade);
 
-        UserEntity updatedUser = userRepository.save(userForUpgrade);
+        User updatedUser = userRepository.save(userForUpgrade);
         log.debug("User with ID - {} is updated in repository.", id);
         return updatedUser;
     }
@@ -71,11 +67,4 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(id);
         log.debug("User with ID - {} is deleted from repository.", id);
     }
-
-    private void validateUserExists(long id, Optional<UserEntity> userOpt) {
-        if (!userOpt.isPresent()) {
-            throw new NotFoundException(String.format("User with id: %d is not found", id));
-        }
-    }
-
 }

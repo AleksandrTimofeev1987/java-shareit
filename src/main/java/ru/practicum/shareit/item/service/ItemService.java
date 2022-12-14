@@ -1,10 +1,9 @@
 package ru.practicum.shareit.item.service;
 
+import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.dto.ItemUpdateDto;
 import ru.practicum.shareit.item.model.Comment;
-import ru.practicum.shareit.item.model.CommentEntity;
-import ru.practicum.shareit.item.model.ItemEntity;
-import ru.practicum.shareit.item.model.ItemWithBookingsAndComments;
+import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
 
@@ -16,7 +15,7 @@ public interface ItemService {
      * @param userId - ID of user - owner of items.
      * @return - List of items owned by user.
      */
-    List<ItemWithBookingsAndComments> getAllItemsByUserId(Long userId);
+    List<ItemResponseDto> getAllItemsByUserId(Long userId);
 
     /**
      * Method returns item by ID.
@@ -25,7 +24,7 @@ public interface ItemService {
      * @param itemId - ID of item requested.
      * @return - Item with requested ID.
      */
-    ItemWithBookingsAndComments getItemById(Long userId, Long itemId);
+    ItemResponseDto getItemById(Long userId, Long itemId);
 
     /**
      * Method adds item to repository.
@@ -34,7 +33,7 @@ public interface ItemService {
      * @param item - Item to be added.
      * @return - Added item with assigned ID.
      */
-    ItemEntity createItem(Long userId, ItemEntity item);
+    Item createItem(Long userId, Item item);
 
     /**
      * Method updates item in repository.
@@ -44,7 +43,7 @@ public interface ItemService {
      * @param itemDto - Item to be updated.
      * @return - Updated item with assigned ID.
      */
-    ItemEntity updateItem(Long userId, Long itemId, ItemUpdateDto itemDto);
+    Item updateItem(Long userId, Long itemId, ItemUpdateDto itemDto);
 
     /**
      * Method returns list of items containing certain text in name or description.
@@ -54,14 +53,17 @@ public interface ItemService {
      *
      * @return - List of items containing text in name or description.
      */
-    List<ItemEntity> searchItemsByText(Long userId, String text);
+    List<Item> searchItemsByText(Long userId, String text);
+
 
     /**
      * Method creates comment to item.
      *
+     * @param userId - user creating comment.
+     * @param itemId - item to be commented.
      * @param comment - comment to be created.
      *
      * @return - created comment.
      */
-    Comment createComment(CommentEntity comment);
+    Comment createComment(Long userId, Long itemId, Comment comment);
 }
