@@ -2,7 +2,7 @@ package ru.practicum.shareit.item.mapper;
 
 import org.mapstruct.*;
 import ru.practicum.shareit.item.dto.*;
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.entity.Item;
 
 @Mapper(componentModel = "spring")
 public interface ItemMapper {
