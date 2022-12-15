@@ -13,7 +13,6 @@ import ru.practicum.shareit.item.entity.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.entity.User;
 import ru.practicum.shareit.user.repository.UserRepository;
-import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,7 +23,6 @@ import java.util.List;
 @Slf4j
 public class BookingServiceImpl implements BookingService {
 
-    private static final Sort SORT_ORDER = Sort.by(Sort.Direction.DESC, "start");
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
@@ -40,22 +38,22 @@ public class BookingServiceImpl implements BookingService {
 
         switch (state) {
             case ALL:
-                foundBookings = bookingRepository.findByBookerId(userId, SORT_ORDER);
+                foundBookings = bookingRepository.findByBookerIdOrderByStartDesc(userId);
                 break;
             case CURRENT:
-                foundBookings = bookingRepository.findByBookerIdAndStartIsBeforeAndEndIsAfter(userId, SORT_ORDER, now, now);
+                foundBookings = bookingRepository.findByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(userId, now, now);
                 break;
             case PAST:
-                foundBookings = bookingRepository.findByBookerIdAndEndIsBefore(userId, SORT_ORDER, now);
+                foundBookings = bookingRepository.findByBookerIdAndEndIsBeforeOrderByStartDesc(userId, now);
                 break;
             case FUTURE:
-                foundBookings = bookingRepository.findByBookerIdAndStartIsAfter(userId, SORT_ORDER, now);
+                foundBookings = bookingRepository.findByBookerIdAndStartIsAfterOrderByStartDesc(userId, now);
                 break;
             case WAITING:
-                foundBookings = bookingRepository.findByBookerIdAndStatus(userId, SORT_ORDER, BookingStatus.WAITING);
+                foundBookings = bookingRepository.findByBookerIdAndStatusOrderByStartDesc(userId, BookingStatus.WAITING);
                 break;
             case REJECTED:
-                foundBookings = bookingRepository.findByBookerIdAndStatus(userId, SORT_ORDER, BookingStatus.REJECTED);
+                foundBookings = bookingRepository.findByBookerIdAndStatusOrderByStartDesc(userId, BookingStatus.REJECTED);
                 break;
         }
 
@@ -74,22 +72,22 @@ public class BookingServiceImpl implements BookingService {
 
         switch (state) {
             case ALL:
-                foundBookings = bookingRepository.findByItemOwnerId(userId, SORT_ORDER);
+                foundBookings = bookingRepository.findByItemOwnerIdOrderByStartDesc(userId);
                 break;
             case CURRENT:
-                foundBookings = bookingRepository.findByItemOwnerIdAndStartIsBeforeAndEndIsAfter(userId, SORT_ORDER, now, now);
+                foundBookings = bookingRepository.findByItemOwnerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(userId, now, now);
                 break;
             case PAST:
-                foundBookings = bookingRepository.findByItemOwnerIdAndEndIsBefore(userId, SORT_ORDER, now);
+                foundBookings = bookingRepository.findByItemOwnerIdAndEndIsBeforeOrderByStartDesc(userId, now);
                 break;
             case FUTURE:
-                foundBookings = bookingRepository.findByItemOwnerIdAndStartIsAfter(userId, SORT_ORDER, now);
+                foundBookings = bookingRepository.findByItemOwnerIdAndStartIsAfterOrderByStartDesc(userId, now);
                 break;
             case WAITING:
-                foundBookings = bookingRepository.findByItemOwnerIdAndStatus(userId, SORT_ORDER, BookingStatus.WAITING);
+                foundBookings = bookingRepository.findByItemOwnerIdAndStatusOrderByStartDesc(userId, BookingStatus.WAITING);
                 break;
             case REJECTED:
-                foundBookings = bookingRepository.findByItemOwnerIdAndStatus(userId, SORT_ORDER, BookingStatus.REJECTED);
+                foundBookings = bookingRepository.findByItemOwnerIdAndStatusOrderByStartDesc(userId, BookingStatus.REJECTED);
                 break;
         }
 
