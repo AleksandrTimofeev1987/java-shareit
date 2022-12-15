@@ -46,7 +46,7 @@ public class ItemServiceImpl implements ItemService {
         log.debug("A list of all items owned by user with ID - {} is requested.", userId);
 
         validateUserExists(userId);
-        List<Item> items = itemRepository.findByOwnerId(userId);
+        List<Item> items = itemRepository.findByOwnerIdOrderById(userId);
 
         log.debug("A list of all items owned by user with ID - {} is received with size of {}.", userId, items.size());
         return items
