@@ -4,12 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.exception.model.ConflictException;
 import ru.practicum.shareit.exception.model.NotFoundException;
 import ru.practicum.shareit.user.dto.UserResponseDto;
 import ru.practicum.shareit.user.dto.UserUpdateDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.entity.User;
 import ru.practicum.shareit.user.repository.UserRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,7 +49,14 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponseDto createUser(User user) {
         log.debug("Request to add user with name - {} is received.", user.getName());
-        User createdUser = userRepository.save(user);
+
+        User createdUser;
+        try {
+            createdUser = userRepository.save(user);
+        } catch (DataIntegrityViolationException e) {
+            throw new ConflictException("Email is a duplicate.");
+        }
+
         log.debug("User with ID - {} is added to repository.", createdUser.getId());
         return mapper.toUserResponseDto(createdUser);
     }

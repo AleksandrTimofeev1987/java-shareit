@@ -1,7 +1,6 @@
 package ru.practicum.shareit.exception.handler;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
@@ -25,8 +24,8 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(value = HttpStatus.CONFLICT)
-    public ErrorResponse handleDataIntegrityViolation(final DataIntegrityViolationException e) {
-        String error = "Email is a duplicate.";
+    public ErrorResponse handleConflict(final ConflictException e) {
+        String error = e.getMessage();
         log.warn(error);
         return new ErrorResponse(error);
     }

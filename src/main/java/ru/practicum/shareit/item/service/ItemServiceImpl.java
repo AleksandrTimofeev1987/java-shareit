@@ -80,7 +80,7 @@ public class ItemServiceImpl implements ItemService {
         item.setOwner(userRepository.findById(userId).orElseThrow(() -> new NotFoundException(String.format("User with id: %d is not found", userId))));
         Item createdItem = itemRepository.save(item);
 
-        log.debug("Item with id - {} is created.", item.getId());
+        log.debug("Item with id - {} is created.", createdItem.getId());
         return itemMapper.toItemResponseDto(createdItem);
     }
 
