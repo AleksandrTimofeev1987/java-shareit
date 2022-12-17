@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.entity.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
@@ -42,6 +43,7 @@ public class ItemServiceImpl implements ItemService {
     private final CommentMapper commentMapper;
 
     @Override
+    @Transactional(readOnly = true)
     public List<ItemResponseDto> getAllItemsByUserId(Long userId) {
         log.debug("A list of all items owned by user with ID - {} is requested.", userId);
 
@@ -56,6 +58,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ItemResponseDto getItemById(Long userId, Long itemId) {
         log.debug("Item with ID - {} is requested.", itemId);
 
@@ -69,6 +72,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public Item createItem(Long userId, Item item) {
         log.debug("Request to add item with name - {} is received.", item.getName());
 
@@ -80,6 +84,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public Item updateItem(Long userId, Long itemId, ItemUpdateDto itemDto) {
         log.debug("Request to update item with ID - {} is received.", itemId);
 
@@ -98,6 +103,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Item> searchItemsByText(Long userId, String text) {
         log.debug("A list of all items containing text ({}) in name or description is requested.", text);
 
@@ -114,6 +120,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public Comment createComment(Long userId, Long itemId, Comment comment) {
         log.debug("Request to add comment to item {} by user with id {} received.", itemId, userId);
 

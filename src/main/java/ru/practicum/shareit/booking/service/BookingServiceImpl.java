@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.entity.Booking;
 import ru.practicum.shareit.booking.entity.BookingStatus;
 import ru.practicum.shareit.booking.entity.RequestState;
@@ -29,6 +30,7 @@ public class BookingServiceImpl implements BookingService {
 
 
     @Override
+    @Transactional(readOnly = true)
     public List<Booking> getAllBookingsByBooker(Long userId, RequestState state) {
         log.debug("Request to get all bookings made by user with id - {} is received (state = {}).", userId, state);
         validateUserExists(userId);
@@ -62,6 +64,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Booking> getAllBookingsByOwner(Long userId, RequestState state) {
         log.debug("Request to get all bookings for items owned by user with id - {} is received (state = {}).", userId, state);
         validateUserExists(userId);
@@ -96,6 +99,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Booking getBookingById(Long userId, Long bookingId) {
         log.debug("Request to get booking with id - {} from user with id - {} is received.", bookingId, userId);
         validateUserExists(userId);
@@ -108,6 +112,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public Booking createBooking(Long userId, Booking booking) {
         log.debug("Request to add booking for item with id - {} is received.", booking.getItem().getId());
         validateStartBeforeEnd(booking);
@@ -129,6 +134,7 @@ public class BookingServiceImpl implements BookingService {
 
 
     @Override
+    @Transactional
     public Booking setBookingStatus(Long userId, Long bookingId, Boolean approved) {
         log.debug("Request to set booking status for booking with id - {} (approved = {}) is received.", bookingId, approved);
         validateUserExists(userId);
