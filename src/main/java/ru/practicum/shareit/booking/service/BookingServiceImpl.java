@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.entity.Booking;
 import ru.practicum.shareit.booking.entity.BookingStatus;
 import ru.practicum.shareit.booking.entity.RequestState;
+import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.model.BadRequestException;
 import ru.practicum.shareit.exception.model.NotFoundException;
@@ -18,6 +20,7 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,11 +30,12 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
+    private final BookingMapper mapper;
 
 
     @Override
     @Transactional(readOnly = true)
-    public List<Booking> getAllBookingsByBooker(Long userId, RequestState state) {
+    public List<BookingResponseDto> getAllBookingsByBooker(Long userId, RequestState state) {
         log.debug("Request to get all bookings made by user with id - {} is received (state = {}).", userId, state);
         validateUserExists(userId);
 
@@ -60,12 +64,15 @@ public class BookingServiceImpl implements BookingService {
         }
 
         log.debug("Found all bookings made by user with id - {} in amount of {}.", userId, foundBookings.size());
-        return foundBookings;
+        return foundBookings
+                .stream()
+                .map(mapper::toBookingResponseDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Booking> getAllBookingsByOwner(Long userId, RequestState state) {
+    public List<BookingResponseDto> getAllBookingsByOwner(Long userId, RequestState state) {
         log.debug("Request to get all bookings for items owned by user with id - {} is received (state = {}).", userId, state);
         validateUserExists(userId);
         validateUserOwnItems(userId);
@@ -95,25 +102,28 @@ public class BookingServiceImpl implements BookingService {
         }
 
         log.debug("Found all bookings for items owned by user with id - {} in amount of {}.", userId, foundBookings.size());
-        return foundBookings;
+        return foundBookings
+                .stream()
+                .map(mapper::toBookingResponseDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Booking getBookingById(Long userId, Long bookingId) {
+    public BookingResponseDto getBookingById(Long userId, Long bookingId) {
         log.debug("Request to get booking with id - {} from user with id - {} is received.", bookingId, userId);
         validateUserExists(userId);
         validateUserOwnItemOrUserCreatedBooking(userId, bookingId);
 
-        Booking savedBooking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException(String.format("Booking with id: %d is not found", bookingId)));
+        Booking foundBooking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException(String.format("Booking with id: %d is not found", bookingId)));
 
-        log.debug("Booking with ID - {} is found.", savedBooking.getId());
-        return savedBooking;
+        log.debug("Booking with ID - {} is found.", foundBooking.getId());
+        return mapper.toBookingResponseDto(foundBooking);
     }
 
     @Override
     @Transactional
-    public Booking createBooking(Long userId, Booking booking) {
+    public BookingResponseDto createBooking(Long userId, Booking booking) {
         log.debug("Request to add booking for item with id - {} is received.", booking.getItem().getId());
         validateStartBeforeEnd(booking);
 
@@ -126,33 +136,33 @@ public class BookingServiceImpl implements BookingService {
         booking.setItem(bookedItem);
         booking.setBooker(booker);
 
-        Booking savedBooking = bookingRepository.save(booking);
+        Booking createdBooking = bookingRepository.save(booking);
 
-        log.debug("Booking with ID - {} is added to repository.", savedBooking.getId());
-        return savedBooking;
+        log.debug("Booking with ID - {} is added to repository.", createdBooking.getId());
+        return mapper.toBookingResponseDto(createdBooking);
     }
 
 
     @Override
     @Transactional
-    public Booking setBookingStatus(Long userId, Long bookingId, Boolean approved) {
+    public BookingResponseDto setBookingStatus(Long userId, Long bookingId, Boolean approved) {
         log.debug("Request to set booking status for booking with id - {} (approved = {}) is received.", bookingId, approved);
         validateUserExists(userId);
         validateUserOwnItem(userId, bookingId);
 
-        Booking savedBooking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException(String.format("Booking with id: %d is not found", bookingId)));
+        Booking bookingForUpdate = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException(String.format("Booking with id: %d is not found", bookingId)));
 
         if (approved) {
-            validateBookingIsNotApproved(bookingId, savedBooking.getStatus());
-            savedBooking.setStatus(BookingStatus.APPROVED);
+            validateBookingIsNotApproved(bookingId, bookingForUpdate.getStatus());
+            bookingForUpdate.setStatus(BookingStatus.APPROVED);
         } else {
-            savedBooking.setStatus(BookingStatus.REJECTED);
+            bookingForUpdate.setStatus(BookingStatus.REJECTED);
         }
 
-        Booking updatedBooking = bookingRepository.save(savedBooking);
+        Booking updatedBooking = bookingRepository.save(bookingForUpdate);
 
         log.debug("Booking with ID - {} is {}", updatedBooking.getId(), updatedBooking.getStatus().toString());
-        return updatedBooking;
+        return mapper.toBookingResponseDto(updatedBooking);
     }
 
     private void validateUserExists(long userId) {

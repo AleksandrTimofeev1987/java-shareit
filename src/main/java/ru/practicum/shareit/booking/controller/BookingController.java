@@ -13,7 +13,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path = "/bookings")
@@ -27,25 +26,19 @@ public class BookingController {
     @GetMapping
     public List<BookingResponseDto> getAllBookingsByBooker(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                                     @RequestParam (required = false, defaultValue = "ALL") RequestState state) {
-        return bookingService.getAllBookingsByBooker(userId, state)
-                .stream()
-                .map(mapper::toBookingResponseDto)
-                .collect(Collectors.toList());
+        return bookingService.getAllBookingsByBooker(userId, state);
     }
 
     @GetMapping("/owner")
     public List<BookingResponseDto> getAllBookingsByOwner(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                                     @RequestParam (required = false, defaultValue = "ALL") RequestState state) {
-        return bookingService.getAllBookingsByOwner(userId, state)
-                .stream()
-                .map(mapper::toBookingResponseDto)
-                .collect(Collectors.toList());
+        return bookingService.getAllBookingsByOwner(userId, state);
     }
 
     @GetMapping("/{bookingId}")
     public BookingResponseDto getBookingById(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                       @PathVariable @Min(1L) Long bookingId) {
-        return mapper.toBookingResponseDto(bookingService.getBookingById(userId, bookingId));
+        return bookingService.getBookingById(userId, bookingId);
     }
 
     @PostMapping
@@ -53,13 +46,13 @@ public class BookingController {
                                      @Valid @RequestBody BookingCreateDto bookingDto) {
         Booking booking = mapper.toBooking(bookingDto);
 
-        return mapper.toBookingResponseDto(bookingService.createBooking(userId, booking));
+        return bookingService.createBooking(userId, booking);
     }
 
     @PatchMapping("/{bookingId}")
     public BookingResponseDto setBookingStatus(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                         @PathVariable @Min(1L) Long bookingId,
                                         @NotNull @RequestParam Boolean approved) {
-        return mapper.toBookingResponseDto(bookingService.setBookingStatus(userId, bookingId, approved));
+        return bookingService.setBookingStatus(userId, bookingId, approved);
     }
 }

@@ -10,6 +10,7 @@ import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.model.BadRequestException;
 import ru.practicum.shareit.exception.model.ForbiddenException;
 import ru.practicum.shareit.exception.model.NotFoundException;
+import ru.practicum.shareit.item.dto.CommentResponseDto;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.dto.ItemUpdateDto;
 import ru.practicum.shareit.item.mapper.CommentMapper;
@@ -48,10 +49,10 @@ public class ItemServiceImpl implements ItemService {
         log.debug("A list of all items owned by user with ID - {} is requested.", userId);
 
         validateUserExists(userId);
-        List<Item> items = itemRepository.findByOwnerIdOrderById(userId);
+        List<Item> foundItems = itemRepository.findByOwnerIdOrderById(userId);
 
-        log.debug("A list of all items owned by user with ID - {} is received with size of {}.", userId, items.size());
-        return items
+        log.debug("A list of all items owned by user with ID - {} is received with size of {}.", userId, foundItems.size());
+        return foundItems
                 .stream()
                 .map(item -> toItemResponseDto(userId, item))
                 .collect(Collectors.toList());
@@ -63,9 +64,9 @@ public class ItemServiceImpl implements ItemService {
         log.debug("Item with ID - {} is requested.", itemId);
 
         validateUserExists(userId);
-        Item savedItem = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(String.format("Item with id: %d is not found", itemId)));
+        Item foundItem = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(String.format("Item with id: %d is not found", itemId)));
 
-        ItemResponseDto result = toItemResponseDto(userId, savedItem);
+        ItemResponseDto result = toItemResponseDto(userId, foundItem);
 
         log.debug("Item with ID - {} is received.", result.getId());
         return result;
@@ -73,19 +74,19 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public Item createItem(Long userId, Item item) {
+    public ItemResponseDto createItem(Long userId, Item item) {
         log.debug("Request to add item with name - {} is received.", item.getName());
 
         item.setOwner(userRepository.findById(userId).orElseThrow(() -> new NotFoundException(String.format("User with id: %d is not found", userId))));
-        Item savedItem = itemRepository.save(item);
+        Item createdItem = itemRepository.save(item);
 
         log.debug("Item with id - {} is created.", item.getId());
-        return savedItem;
+        return itemMapper.toItemResponseDto(createdItem);
     }
 
     @Override
     @Transactional
-    public Item updateItem(Long userId, Long itemId, ItemUpdateDto itemDto) {
+    public ItemResponseDto updateItem(Long userId, Long itemId, ItemUpdateDto itemDto) {
         log.debug("Request to update item with ID - {} is received.", itemId);
 
         validateUserExists(userId);
@@ -99,29 +100,31 @@ public class ItemServiceImpl implements ItemService {
         Item updatedItem = itemRepository.save(itemForUpdate);
 
         log.debug("Item with ID - {} is updated in repository.", updatedItem.getId());
-        return updatedItem;
+        return itemMapper.toItemResponseDto(updatedItem);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Item> searchItemsByText(Long userId, String text) {
+    public List<ItemResponseDto> searchItemsByText(Long userId, String text) {
         log.debug("A list of all items containing text ({}) in name or description is requested.", text);
 
         validateUserExists(userId);
-        List<Item> result = new ArrayList<>();
         if (!SearchValidator.validateText(text)) {
-            return result;
+            return new ArrayList<>();
         }
 
-        result = itemRepository.searchByNameOrDescription(text);
+        List<Item> foundBookings = itemRepository.searchByNameOrDescription(text);
 
-        log.debug("A list of all items containing text ({}) in name or description is received with size of {}.", text, result.size());
-        return result;
+        log.debug("A list of all items containing text ({}) in name or description is received with size of {}.", text, foundBookings.size());
+        return foundBookings
+                .stream()
+                .map(itemMapper::toItemResponseDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     @Transactional
-    public Comment createComment(Long userId, Long itemId, Comment comment) {
+    public CommentResponseDto createComment(Long userId, Long itemId, Comment comment) {
         log.debug("Request to add comment to item {} by user with id {} received.", itemId, userId);
 
         validateUserExists(userId);
@@ -131,10 +134,10 @@ public class ItemServiceImpl implements ItemService {
         comment.setItem(itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(String.format("Item with id: %d is not found", userId))));
         comment.setAuthor(userRepository.findById(userId).orElseThrow(() -> new NotFoundException(String.format("User with id: %d is not found", userId))));
 
-        Comment savedComment = commentRepository.save(comment);
+        Comment createdComment = commentRepository.save(comment);
 
-        log.debug("Comment to item {} is created with id {}.", itemId, savedComment.getId());
-        return savedComment;
+        log.debug("Comment to item {} is created with id {}.", itemId, createdComment.getId());
+        return commentMapper.toCommentResponseDto(createdComment);
     }
 
     private ItemResponseDto toItemResponseDto(Long userId, Item item) {

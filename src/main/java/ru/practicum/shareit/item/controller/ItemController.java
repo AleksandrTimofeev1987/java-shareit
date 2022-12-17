@@ -12,7 +12,6 @@ import ru.practicum.shareit.item.service.ItemService;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/items")
@@ -39,23 +38,20 @@ public class ItemController {
     public ItemResponseDto createItem(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                       @Valid @RequestBody ItemCreateDto itemDto) {
         Item item = itemMapper.toItem(itemDto);
-        return itemMapper.toItemResponseDto(itemService.createItem(userId, item));
+        return itemService.createItem(userId, item);
     }
 
     @PatchMapping("/{itemId}")
     public ItemResponseDto updateItem(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                       @Min(1L) @PathVariable Long itemId,
                                       @RequestBody ItemUpdateDto itemDto) {
-        return itemMapper.toItemResponseDto(itemService.updateItem(userId, itemId, itemDto));
+        return itemService.updateItem(userId, itemId, itemDto);
     }
 
     @GetMapping("/search")
     public List<ItemResponseDto> searchItemsByText(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                                    @RequestParam String text) {
-        return itemService.searchItemsByText(userId, text)
-                .stream()
-                .map(itemMapper::toItemResponseDto)
-                .collect(Collectors.toList());
+        return itemService.searchItemsByText(userId, text);
     }
 
     @PostMapping("/{itemId}/comment")
@@ -63,6 +59,6 @@ public class ItemController {
                                             @Min(1L) @PathVariable Long itemId,
                                             @Valid @RequestBody CommentCreateDto commentDto) {
         Comment comment = commentMapper.toComment(commentDto);
-        return commentMapper.toCommentResponseDto(itemService.createComment(userId, itemId, comment));
+        return itemService.createComment(userId, itemId, comment);
     }
 }
