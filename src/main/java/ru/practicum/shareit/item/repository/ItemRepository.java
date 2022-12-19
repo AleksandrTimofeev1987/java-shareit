@@ -31,4 +31,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "FROM Item AS i " +
             "WHERE i.owner.id = :userId")
     Long countItemsOwnedByUser(@Param("userId") Long userId);
+
+    List<Item> findAllByRequestId(Long id);
 }

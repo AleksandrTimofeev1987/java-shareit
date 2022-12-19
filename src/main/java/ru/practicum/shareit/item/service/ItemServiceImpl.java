@@ -20,6 +20,7 @@ import ru.practicum.shareit.item.entity.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.validation.SearchValidator;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -38,6 +39,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository requestRepository;
     private final ItemMapper itemMapper;
     private final UserMapper userMapper;
     private final BookingMapper bookingMapper;
@@ -74,8 +76,12 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public ItemResponseDto createItem(Long userId, Item item) {
+    public ItemResponseDto createItem(Long userId, Item item, Long requestId) {
         log.debug("Request to add item with name - {} is received.", item.getName());
+
+        if (requestId != null) {
+            item.setRequest(requestRepository.findById(requestId).orElseThrow(() -> new NotFoundException(String.format("Item request with id: %d is not found", requestId))));
+        }
 
         item.setOwner(userRepository.findById(userId).orElseThrow(() -> new NotFoundException(String.format("User with id: %d is not found", userId))));
         Item createdItem = itemRepository.save(item);
@@ -152,6 +158,9 @@ public class ItemServiceImpl implements ItemService {
         responseDto.setDescription(item.getDescription());
         responseDto.setOwner(userMapper.toUserResponseDto(item.getOwner()));
         responseDto.setAvailable(item.getAvailable());
+        if (item.getRequest() != null) {
+            responseDto.setRequestId(item.getRequest().getId());
+        }
 
         populateItemDtoWithBookings(userId, item, responseDto);
 

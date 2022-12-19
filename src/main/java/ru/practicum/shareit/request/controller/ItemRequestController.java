@@ -26,6 +26,13 @@ public class ItemRequestController {
         return service.getAllItemRequestsByRequesterId(userId);
     }
 
+    @GetMapping("/all")
+    public List<ItemRequestResponseDto> getAllItemRequests(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
+                                                           @RequestParam(required = false) @Min(0) Integer from,
+                                                           @RequestParam(required = false) @Min(1) Integer size) {
+        return service.getAllItemRequests(userId, from, size);
+    }
+
     @GetMapping("/{requestId}")
     public ItemRequestResponseDto getItemRequestById(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                                      @Min(1L) @PathVariable Long requestId) {

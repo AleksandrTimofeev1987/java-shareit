@@ -18,40 +18,40 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemController {
 
-    private final ItemService itemService;
+    private final ItemService service;
     private final ItemMapper itemMapper;
     private final CommentMapper commentMapper;
     private static final String REQUEST_HEADER_USER_ID_TITLE = "X-Sharer-User-Id";
 
     @GetMapping
     public List<ItemResponseDto> getAllItemsByUserId(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId) {
-        return itemService.getAllItemsByUserId(userId);
+        return service.getAllItemsByUserId(userId);
     }
 
     @GetMapping("/{itemId}")
     public ItemResponseDto getItemById(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                        @Min(1L) @PathVariable Long itemId) {
-        return itemService.getItemById(userId, itemId);
+        return service.getItemById(userId, itemId);
     }
 
     @PostMapping
     public ItemResponseDto createItem(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                       @Valid @RequestBody ItemCreateDto itemDto) {
         Item item = itemMapper.toItem(itemDto);
-        return itemService.createItem(userId, item);
+        return service.createItem(userId, item, itemDto.getRequestId());
     }
 
     @PatchMapping("/{itemId}")
     public ItemResponseDto updateItem(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                       @Min(1L) @PathVariable Long itemId,
                                       @RequestBody ItemUpdateDto itemDto) {
-        return itemService.updateItem(userId, itemId, itemDto);
+        return service.updateItem(userId, itemId, itemDto);
     }
 
     @GetMapping("/search")
     public List<ItemResponseDto> searchItemsByText(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                                    @RequestParam String text) {
-        return itemService.searchItemsByText(userId, text);
+        return service.searchItemsByText(userId, text);
     }
 
     @PostMapping("/{itemId}/comment")
@@ -59,6 +59,6 @@ public class ItemController {
                                             @Min(1L) @PathVariable Long itemId,
                                             @Valid @RequestBody CommentCreateDto commentDto) {
         Comment comment = commentMapper.toComment(commentDto);
-        return itemService.createComment(userId, itemId, comment);
+        return service.createComment(userId, itemId, comment);
     }
 }

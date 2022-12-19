@@ -32,9 +32,10 @@ public interface ItemService {
      *
      * @param userId - ID of user adding item.
      * @param item - Item to be added.
+     * @param requestId - Item request id.
      * @return - Added item with assigned ID.
      */
-    ItemResponseDto createItem(Long userId, Item item);
+    ItemResponseDto createItem(Long userId, Item item, Long requestId);
 
     /**
      * Method updates item in repository.

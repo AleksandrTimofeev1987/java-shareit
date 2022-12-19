@@ -18,32 +18,32 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserService userService;
+    private final UserService service;
     private final UserMapper mapper;
 
     @GetMapping
     public List<UserResponseDto> getAllUsers() {
-        return userService.getAllUsers();
+        return service.getAllUsers();
     }
 
     @GetMapping("/{id}")
     public UserResponseDto getUserById(@Min(1L) @PathVariable Long id) {
-        return userService.getUserById(id);
+        return service.getUserById(id);
     }
 
     @PostMapping
     public UserResponseDto createUser(@Valid @RequestBody UserCreateDto userDto) {
         User user = mapper.toUserEntity(userDto);
-        return userService.createUser(user);
+        return service.createUser(user);
     }
 
     @PatchMapping("/{id}")
     public UserResponseDto updateUser(@Min(1L) @PathVariable Long id, @RequestBody UserUpdateDto userDto) {
-        return userService.updateUser(id, userDto);
+        return service.updateUser(id, userDto);
     }
 
     @DeleteMapping("/{id}")
     public void deleteUser(@Min(1L) @PathVariable Long id) {
-        userService.deleteUser(id);
+        service.deleteUser(id);
     }
 }

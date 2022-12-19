@@ -24,4 +24,6 @@ public class ItemCreateDto {
 
     @NotNull (message = "Item availability should not be Null")
     private Boolean available;
+
+    private Long requestId;
 }
