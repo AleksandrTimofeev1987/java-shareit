@@ -24,8 +24,10 @@ public class ItemController {
     private static final String REQUEST_HEADER_USER_ID_TITLE = "X-Sharer-User-Id";
 
     @GetMapping
-    public List<ItemResponseDto> getAllItemsByUserId(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId) {
-        return service.getAllItemsByUserId(userId);
+    public List<ItemResponseDto> getAllItemsByUserId(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
+                                                     @RequestParam(required = false) @Min(0) Integer from,
+                                                     @RequestParam(required = false) @Min(1) Integer size) {
+        return service.getAllItemsByUserId(userId, from, size);
     }
 
     @GetMapping("/{itemId}")
@@ -50,8 +52,10 @@ public class ItemController {
 
     @GetMapping("/search")
     public List<ItemResponseDto> searchItemsByText(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
-                                                   @RequestParam String text) {
-        return service.searchItemsByText(userId, text);
+                                                   @RequestParam String text,
+                                                   @RequestParam(required = false) @Min(0) Integer from,
+                                                   @RequestParam(required = false) @Min(1) Integer size) {
+        return service.searchItemsByText(userId, text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")

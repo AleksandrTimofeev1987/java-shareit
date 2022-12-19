@@ -2,6 +2,9 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
@@ -34,8 +37,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class ItemServiceImpl implements ItemService {
-    private final BookingRepository bookingRepository;
 
+    private static final Sort SORT_BY_ID = Sort.by(Sort.Direction.ASC, "id");
+    private final BookingRepository bookingRepository;
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
@@ -47,11 +51,19 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ItemResponseDto> getAllItemsByUserId(Long userId) {
+    public List<ItemResponseDto> getAllItemsByUserId(Long userId, Integer from, Integer size) {
         log.debug("A list of all items owned by user with ID - {} is requested.", userId);
 
         validateUserExists(userId);
-        List<Item> foundItems = itemRepository.findByOwnerIdOrderById(userId);
+
+        List<Item> foundItems;
+        if (from == null || size == null) {
+            foundItems = itemRepository.findByOwnerIdOrderById(userId);
+        } else {
+            validatePaginationParameters(from, size);
+            Pageable page = PageRequest.of(from / size, size, SORT_BY_ID);
+            foundItems = itemRepository.findByOwnerId(userId, page);
+        }
 
         log.debug("A list of all items owned by user with ID - {} is received with size of {}.", userId, foundItems.size());
         return foundItems
@@ -111,7 +123,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ItemResponseDto> searchItemsByText(Long userId, String text) {
+    public List<ItemResponseDto> searchItemsByText(Long userId, String text, Integer from, Integer size) {
         log.debug("A list of all items containing text ({}) in name or description is requested.", text);
 
         validateUserExists(userId);
@@ -119,10 +131,17 @@ public class ItemServiceImpl implements ItemService {
             return new ArrayList<>();
         }
 
-        List<Item> foundBookings = itemRepository.searchByNameOrDescription(text);
+        List<Item> foundItems;
+        if (from == null || size == null) {
+            foundItems = itemRepository.searchByNameOrDescription(text);
+        } else {
+            validatePaginationParameters(from, size);
+            Pageable page = PageRequest.of(from / size, size, SORT_BY_ID);
+            foundItems = itemRepository.searchByNameOrDescription(text, page);
+        }
 
-        log.debug("A list of all items containing text ({}) in name or description is received with size of {}.", text, foundBookings.size());
-        return foundBookings
+        log.debug("A list of all items containing text ({}) in name or description is received with size of {}.", text, foundItems.size());
+        return foundItems
                 .stream()
                 .map(itemMapper::toItemResponseDto)
                 .collect(Collectors.toList());
@@ -208,6 +227,12 @@ public class ItemServiceImpl implements ItemService {
     private void validateUserBookedItemAndBookingEnded(Long authorId, Long itemId) {
         if (bookingRepository.countByBookerIdItemIdAndPast(authorId, itemId, LocalDateTime.now()) < 1) {
             throw new BadRequestException("Comment cannot be published for unfinished or future booking");
+        }
+    }
+
+    private void validatePaginationParameters(Integer from, Integer size) {
+        if (from < 0 || size < 1) {
+            throw new BadRequestException("Incorrect pagination parameters.");
         }
     }
 
