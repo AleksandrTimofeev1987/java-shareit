@@ -13,18 +13,22 @@ public interface BookingService {
      *
      * @param userId - ID of user.
      * @param state - selection parameter, can be WAITING, REJECTED("R"), ALL("A"), CURRENT("C"), PAST("P"), FUTURE("F").
+     * @param from - index of first element in the sample.
+     * @param size - size of elements shown on one page.
      * @return - List of bookings made by user.
      */
-    List<BookingResponseDto> getAllBookingsByBooker(Long userId, RequestState state);
+    List<BookingResponseDto> getAllBookingsByBooker(Long userId, RequestState state, Integer from, Integer size);
 
     /**
      * Method returns list of bookings made for items owned by user.
      *
      * @param userId - ID of user.
      * @param state - selection parameter, can be WAITING, REJECTED("R"), ALL("A"), CURRENT("C"), PAST("P"), FUTURE("F").
+     * @param from - index of first element in the sample.
+     * @param size - size of elements shown on one page.
      * @return - List of bookings made for items owned by user.
      */
-    List<BookingResponseDto> getAllBookingsByOwner(Long userId, RequestState state);
+    List<BookingResponseDto> getAllBookingsByOwner(Long userId, RequestState state, Integer from, Integer size);
 
     /**
      * Method returns booking by ID of booker or item owner.

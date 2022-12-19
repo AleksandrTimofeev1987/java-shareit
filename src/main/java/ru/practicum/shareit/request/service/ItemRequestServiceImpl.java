@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.model.BadRequestException;
 import ru.practicum.shareit.exception.model.NotFoundException;
 import ru.practicum.shareit.item.entity.Item;
 import ru.practicum.shareit.item.mapper.ItemMapper;
@@ -26,8 +27,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class ItemRequestServiceImpl implements ItemRequestService {
-    private final ItemRepository itemRepository;
 
+    private static final Sort SORT_BY_CREATED = Sort.by(Sort.Direction.DESC, "created");
+    private final ItemRepository itemRepository;
     private final ItemRequestRepository requestRepository;
     private final UserRepository userRepository;
     private final ItemRequestMapper requestMapper;
@@ -63,8 +65,9 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                     .filter(request -> !request.getRequester().getId().equals(userId))
                     .collect(Collectors.toList());
         } else {
-            Sort sortBy = Sort.by(Sort.Direction.DESC, "created");
-            Pageable page = PageRequest.of(from, size, sortBy);
+            validatePaginationParameters(from, size);
+            Pageable page = PageRequest.of(from / size, size, SORT_BY_CREATED);
+
             Page<ItemRequest> foundItemRequestsPage = requestRepository.findAll(page);
             foundItemRequests = foundItemRequestsPage.getContent()
                     .stream()
@@ -122,6 +125,12 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     private void validateUserExists(long userId) {
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException(String.format("User with id: %d is not found", userId));
+        }
+    }
+
+    private void validatePaginationParameters(Integer from, Integer size) {
+        if (from < 0 || size < 1) {
+            throw new BadRequestException("Incorrect pagination parameters.");
         }
     }
 }
