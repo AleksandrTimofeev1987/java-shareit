@@ -89,6 +89,25 @@ public class ItemControllerTest {
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    public void shouldReturn400OnGetItemsByWrongPagination() throws Exception {
+        //given
+        postValidUser(VALID_USER);
+        postValidItem(VALID_ITEM);
+
+        //when
+        mockMvc.perform(
+                        get("/items")
+                                .header(REQUEST_HEADER_USER_ID_TITLE, 1)
+                                .param("from", "-1")
+                                .param("size", "0")
+                )
+
+                //then
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     public void shouldReturn200andEmptyListOnGetItems() throws Exception {
         //given
         postValidUser(VALID_USER);
@@ -508,6 +527,76 @@ public class ItemControllerTest {
                 //then
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("length()").value(0));
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    public void shouldReturn200andListOnSearchItemsByNamePaged() throws Exception {
+        //given
+        postValidUser(VALID_USER);
+        postValidItem(VALID_ITEM);
+
+        //when
+        mockMvc.perform(
+                        get("/items/search")
+                                .header(REQUEST_HEADER_USER_ID_TITLE, 1)
+                                .param("text", "nAm")
+                                .param("from", "0")
+                                .param("size", "1")
+                )
+
+                //then
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("length()").value(1))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].name").value("name"))
+                .andExpect(jsonPath("$[0].description").value("description"))
+                .andExpect(jsonPath("$[0].available").value(true));
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    public void shouldReturn200andListOnSearchItemsByDescriptionPaged() throws Exception {
+        //given
+        postValidUser(VALID_USER);
+        postValidItem(VALID_ITEM);
+
+        //when
+        mockMvc.perform(
+                        get("/items/search")
+                                .header(REQUEST_HEADER_USER_ID_TITLE, 1)
+                                .param("text", "eScri")
+                                .param("from", "0")
+                                .param("size", "1")
+                )
+
+                //then
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("length()").value(1))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].name").value("name"))
+                .andExpect(jsonPath("$[0].description").value("description"))
+                .andExpect(jsonPath("$[0].available").value(true));
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    public void shouldReturn200andListOnSearchItemsByWrongPagination() throws Exception {
+        //given
+        postValidUser(VALID_USER);
+        postValidItem(VALID_ITEM);
+
+        //when
+        mockMvc.perform(
+                        get("/items/search")
+                                .header(REQUEST_HEADER_USER_ID_TITLE, 1)
+                                .param("text", "eScri")
+                                .param("from", "-1")
+                                .param("size", "0")
+                )
+
+                //then
+                .andExpect(status().isBadRequest());
     }
 
     @Test

@@ -91,6 +91,32 @@ public class BookingControllerTest {
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    public void shouldReturn200andListOnGetPastBookingsByBooker() throws Exception {
+        //given
+        postValidUser(VALID_USER);
+        postValidItem(VALID_ITEM);
+        postValidUser(VALID_BOOKER);
+        postValidBooking(new BookingCreateDto(1L, LocalDateTime.now().plusSeconds(1), LocalDateTime.now().plusSeconds(1).plusNanos(1)));
+        Thread.sleep(2000);
+
+        //when
+        mockMvc.perform(
+                        get("/bookings")
+                                .header(REQUEST_HEADER_USER_ID_TITLE, 2)
+                                .param("state", "PAST")
+                )
+
+                //then
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("length()").value(1))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].status").value("WAITING"))
+                .andExpect(jsonPath("$[0].booker.id").value(2))
+                .andExpect(jsonPath("$[0].item.id").value(1));
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     public void shouldReturn200andListOnGetFutureBookingsByBooker() throws Exception {
         //given
         postValidUser(VALID_USER);
@@ -167,6 +193,26 @@ public class BookingControllerTest {
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    public void shouldReturn400OnGetBookingsWrongState() throws Exception {
+        //given
+        postValidUser(VALID_USER);
+        postValidItem(VALID_ITEM);
+        postValidUser(VALID_BOOKER);
+        postValidBooking(VALID_BOOKING);
+
+        //when
+        mockMvc.perform(
+                        get("/bookings")
+                                .header(REQUEST_HEADER_USER_ID_TITLE, 2)
+                                .param("state", "WRONG_STATE")
+                )
+
+                //then
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     public void shouldReturn200andListOnGetBookingsByBookerPaged() throws Exception {
         //given
         postValidUser(VALID_USER);
@@ -207,6 +253,34 @@ public class BookingControllerTest {
                         get("/bookings")
                                 .header(REQUEST_HEADER_USER_ID_TITLE, 2)
                                 .param("state", "CURRENT")
+                                .param("from", "0")
+                                .param("size", "1")
+                )
+
+                //then
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("length()").value(1))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].status").value("WAITING"))
+                .andExpect(jsonPath("$[0].booker.id").value(2))
+                .andExpect(jsonPath("$[0].item.id").value(1));
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    public void shouldReturn200andListOnGetPastBookingsByBookerPaged() throws Exception {
+        //given
+        postValidUser(VALID_USER);
+        postValidItem(VALID_ITEM);
+        postValidUser(VALID_BOOKER);
+        postValidBooking(new BookingCreateDto(1L, LocalDateTime.now().plusSeconds(1), LocalDateTime.now().plusSeconds(1).plusNanos(1)));
+        Thread.sleep(2000);
+
+        //when
+        mockMvc.perform(
+                        get("/bookings")
+                                .header(REQUEST_HEADER_USER_ID_TITLE, 2)
+                                .param("state", "PAST")
                                 .param("from", "0")
                                 .param("size", "1")
                 )
@@ -304,6 +378,28 @@ public class BookingControllerTest {
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    public void shouldReturn400OnGetBookingsByBookerByWrongPagination() throws Exception {
+        //given
+        postValidUser(VALID_USER);
+        postValidItem(VALID_ITEM);
+        postValidUser(VALID_BOOKER);
+        postValidBooking(VALID_BOOKING);
+
+        //when
+        mockMvc.perform(
+                        get("/bookings")
+                                .header(REQUEST_HEADER_USER_ID_TITLE, 2)
+                                .param("state", "ALL")
+                                .param("from", "-1")
+                                .param("size", "1")
+                )
+
+                //then
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     public void shouldReturn200andListOnGetAllBookingsByOwner() throws Exception {
         //given
         postValidUser(VALID_USER);
@@ -342,6 +438,32 @@ public class BookingControllerTest {
                         get("/bookings/owner")
                                 .header(REQUEST_HEADER_USER_ID_TITLE, 1)
                                 .param("state", "CURRENT")
+                )
+
+                //then
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("length()").value(1))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].status").value("WAITING"))
+                .andExpect(jsonPath("$[0].booker.id").value(2))
+                .andExpect(jsonPath("$[0].item.id").value(1));
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    public void shouldReturn200andListOnGetPastBookingsByOwner() throws Exception {
+        //given
+        postValidUser(VALID_USER);
+        postValidItem(VALID_ITEM);
+        postValidUser(VALID_BOOKER);
+        postValidBooking(new BookingCreateDto(1L, LocalDateTime.now().plusSeconds(1), LocalDateTime.now().plusSeconds(1).plusNanos(1)));
+        Thread.sleep(2000);
+
+        //when
+        mockMvc.perform(
+                        get("/bookings/owner")
+                                .header(REQUEST_HEADER_USER_ID_TITLE, 1)
+                                .param("state", "PAST")
                 )
 
                 //then
@@ -431,6 +553,26 @@ public class BookingControllerTest {
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    public void shouldReturn400OnGetBookingsByOwnerWrongState() throws Exception {
+        //given
+        postValidUser(VALID_USER);
+        postValidItem(VALID_ITEM);
+        postValidUser(VALID_BOOKER);
+        postValidBooking(VALID_BOOKING);
+
+        //when
+        mockMvc.perform(
+                        get("/bookings/owner")
+                                .header(REQUEST_HEADER_USER_ID_TITLE, 1)
+                                .param("state", "WRONG_STATE")
+                )
+
+                //then
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     public void shouldReturn200andListOnGetBookingsByOwnerPaged() throws Exception {
         //given
         postValidUser(VALID_USER);
@@ -456,7 +598,6 @@ public class BookingControllerTest {
                 .andExpect(jsonPath("$[0].item.id").value(1));
     }
 
-
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     public void shouldReturn200andListOnGetCurrentBookingsByOwnerPaged() throws Exception {
@@ -472,6 +613,34 @@ public class BookingControllerTest {
                         get("/bookings/owner")
                                 .header(REQUEST_HEADER_USER_ID_TITLE, 1)
                                 .param("state", "CURRENT")
+                                .param("from", "0")
+                                .param("size", "1")
+                )
+
+                //then
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("length()").value(1))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].status").value("WAITING"))
+                .andExpect(jsonPath("$[0].booker.id").value(2))
+                .andExpect(jsonPath("$[0].item.id").value(1));
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    public void shouldReturn200andListOnGetPastBookingsByOwnerPaged() throws Exception {
+        //given
+        postValidUser(VALID_USER);
+        postValidItem(VALID_ITEM);
+        postValidUser(VALID_BOOKER);
+        postValidBooking(new BookingCreateDto(1L, LocalDateTime.now().plusSeconds(1), LocalDateTime.now().plusSeconds(1).plusNanos(1)));
+        Thread.sleep(2000);
+
+        //when
+        mockMvc.perform(
+                        get("/bookings/owner")
+                                .header(REQUEST_HEADER_USER_ID_TITLE, 1)
+                                .param("state", "PAST")
                                 .param("from", "0")
                                 .param("size", "1")
                 )
@@ -565,6 +734,28 @@ public class BookingControllerTest {
                 .andExpect(jsonPath("$[0].status").value("REJECTED"))
                 .andExpect(jsonPath("$[0].booker.id").value(2))
                 .andExpect(jsonPath("$[0].item.id").value(1));
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    public void shouldReturn400OnGetBookingsByOwnerByWrongPagination() throws Exception {
+        //given
+        postValidUser(VALID_USER);
+        postValidItem(VALID_ITEM);
+        postValidUser(VALID_BOOKER);
+        postValidBooking(VALID_BOOKING);
+
+        //when
+        mockMvc.perform(
+                        get("/bookings/owner")
+                                .header(REQUEST_HEADER_USER_ID_TITLE, 1)
+                                .param("state", "ALL")
+                                .param("from", "-1")
+                                .param("size", "0")
+                )
+
+                //then
+                .andExpect(status().isBadRequest());
     }
 
     @Test
