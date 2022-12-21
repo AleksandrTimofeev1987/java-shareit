@@ -2,6 +2,7 @@ package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.model.ConflictException;
@@ -69,7 +70,13 @@ public class UserServiceImpl implements UserService {
         User userForUpgrade = userRepository.findById(id).orElseThrow(() -> new NotFoundException(String.format("User with id: %d is not found", id)));
         mapper.toUserFromUserUpdateDto(userDto, userForUpgrade);
 
-        User updatedUser = userRepository.save(userForUpgrade);
+        User updatedUser;
+        try {
+            updatedUser = userRepository.save(userForUpgrade);
+        } catch (DataIntegrityViolationException e) {
+            throw new ConflictException("Email is a duplicate.");
+        }
+
         log.debug("User with ID - {} is updated in repository.", id);
         return mapper.toUserResponseDto(updatedUser);
     }
@@ -78,7 +85,12 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void deleteUser(Long id) {
         log.debug("Request to delete user with ID - {} is received.", id);
-        userRepository.deleteById(id);
+
+        try {
+            userRepository.deleteById(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException(String.format("User with id: %d is not found", id));
+        }
         log.debug("User with ID - {} is deleted from repository.", id);
     }
 }

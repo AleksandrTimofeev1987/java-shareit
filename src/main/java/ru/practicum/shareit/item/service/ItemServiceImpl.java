@@ -226,7 +226,7 @@ public class ItemServiceImpl implements ItemService {
 
     private void validateUserBookedItemAndBookingEnded(Long authorId, Long itemId) {
         if (bookingRepository.countByBookerIdItemIdAndPast(authorId, itemId, LocalDateTime.now()) < 1) {
-            throw new BadRequestException("Comment cannot be published for unfinished or future booking");
+            throw new BadRequestException("Comment cannot be published for non-existing, unfinished or future booking");
         }
     }
 
