@@ -60,19 +60,13 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         List<ItemRequest> foundItemRequests;
 
         if (from == null || size == null) {
-            foundItemRequests = requestRepository.findAll()
-                    .stream()
-                    .filter(request -> !request.getRequester().getId().equals(userId))
-                    .collect(Collectors.toList());
+            foundItemRequests = getFilteredItemRequests(userId, requestRepository.findAll());
         } else {
             validatePaginationParameters(from, size);
             Pageable page = PageRequest.of(from / size, size, SORT_BY_CREATED);
 
             Page<ItemRequest> foundItemRequestsPage = requestRepository.findAll(page);
-            foundItemRequests = foundItemRequestsPage.getContent()
-                    .stream()
-                    .filter(request -> !request.getRequester().getId().equals(userId))
-                    .collect(Collectors.toList());
+            foundItemRequests = getFilteredItemRequests(userId, foundItemRequestsPage.getContent());
         }
 
         log.debug("A list of all item requests created by other users is received with size of {}.", foundItemRequests.size());
@@ -120,6 +114,13 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .collect(Collectors.toList()));
 
         return itemRequestResponseDto;
+    }
+
+    private List<ItemRequest> getFilteredItemRequests(Long userId, List<ItemRequest> foundItemRequests) {
+        return foundItemRequests
+                .stream()
+                .filter(request -> !request.getRequester().getId().equals(userId))
+                .collect(Collectors.toList());
     }
 
     private void validateUserExists(long userId) {
