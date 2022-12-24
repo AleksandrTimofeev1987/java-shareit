@@ -57,6 +57,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     public List<ItemRequestResponseDto> getAllItemRequests(Long userId, Integer from, Integer size) {
         log.debug("A list of all item requests created by other users is requested by user with ID - {}.", userId);
 
+        validateUserExists(userId);
+
         List<ItemRequest> foundItemRequests;
 
         if (from == null || size == null) {

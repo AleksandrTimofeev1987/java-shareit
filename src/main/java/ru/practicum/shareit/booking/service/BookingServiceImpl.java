@@ -106,7 +106,7 @@ public class BookingServiceImpl implements BookingService {
         validateStartBeforeEnd(booking);
 
         Item bookedItem = itemRepository.findById(booking.getItem().getId()).orElseThrow(() -> new NotFoundException(String.format("Item with id: %d is not found", booking.getItem().getId())));
-        validateItemIsAvailable(bookedItem.getId());
+        validateItemIsAvailable(bookedItem);
         validateUserIsNotItemOwner(userId, bookedItem.getOwner().getId());
 
         User booker = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(String.format("User with id: %d is not found", userId)));
@@ -245,9 +245,9 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    private void validateItemIsAvailable(Long itemId) {
-        if (!itemRepository.getItemAvailability(itemId)) {
-            throw new BadRequestException(String.format("Item with ID - %d is not available", itemId));
+    private void validateItemIsAvailable(Item bookedItem) {
+        if (!bookedItem.getAvailable()) {
+            throw new BadRequestException(String.format("Item with ID - %d is not available", bookedItem.getId()));
         }
     }
 
