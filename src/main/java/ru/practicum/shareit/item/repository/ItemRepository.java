@@ -32,12 +32,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> searchByNameOrDescription(@Param("text") String text, Pageable page);
 
     @Query(value = "" +
-            "SELECT i.available " +
-            "FROM Item AS i " +
-            "WHERE i.id = :itemId")
-    boolean getItemAvailability(@Param("itemId") Long itemId);
-
-    @Query(value = "" +
             "SELECT COUNT(i) " +
             "FROM Item AS i " +
             "WHERE i.owner.id = :userId")
