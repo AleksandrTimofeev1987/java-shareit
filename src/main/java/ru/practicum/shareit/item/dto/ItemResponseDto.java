@@ -24,6 +24,8 @@ public class ItemResponseDto {
 
     private Boolean available;
 
+    private Long requestId;
+
     private BookingShortDto lastBooking;
 
     private BookingShortDto nextBooking;

@@ -1,5 +1,6 @@
 package ru.practicum.shareit.user.service;
 
+import ru.practicum.shareit.user.dto.UserResponseDto;
 import ru.practicum.shareit.user.dto.UserUpdateDto;
 import ru.practicum.shareit.user.entity.User;
 
@@ -9,39 +10,42 @@ public interface UserService {
     /**
      * Method returns all users.
      *
-     * @return - List of all users.
+     * @return List of all users.
      */
-    List<User> getAllUsers();
+    List<UserResponseDto> getAllUsers();
 
     /**
      * Method returns user by ID.
      *
-     * @param id - User ID.
-     * @return - User with requested ID.
+     * @param id User ID.
+     *
+     * @return User with requested ID.
      */
-    User getUserById(Long id);
+    UserResponseDto getUserById(Long id);
 
     /**
      * Method adds user to repository.
      *
-     * @param user - User to be added.
-     * @return - Added user with assigned ID.
+     * @param user User to be added.
+     *
+     * @return Added user with assigned ID.
      */
-    User createUser(User user);
+    UserResponseDto createUser(User user);
 
     /**
      * Method updates user in repository.
      *
-     * @param id - ID of user to be updated.
-     * @param userDto - User to be updated.
-     * @return - Updated user.
+     * @param id ID of user to be updated.
+     * @param userDto User to be updated.
+     *
+     * @return Updated user.
      */
-    User updateUser(Long id, UserUpdateDto userDto);
+    UserResponseDto updateUser(Long id, UserUpdateDto userDto);
 
     /**
      * Method deletes user in repository.
      *
-     * @param id - ID of user to be deleted.
+     * @param id ID of user to be deleted.
      */
     void deleteUser(Long id);
 }

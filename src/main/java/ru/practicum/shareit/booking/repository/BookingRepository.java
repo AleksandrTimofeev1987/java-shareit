@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.repository;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,6 +24,16 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findByBookerIdAndStatusOrderByStartDesc(Long userId, BookingStatus status);
 
+    List<Booking> findByBookerId(Long userId, Pageable page);
+
+    List<Booking> findByBookerIdAndStartIsBeforeAndEndIsAfter(Long userId, LocalDateTime now, LocalDateTime now1, Pageable page);
+
+    List<Booking> findByBookerIdAndEndIsBefore(Long userId, LocalDateTime now, Pageable page);
+
+    List<Booking> findByBookerIdAndStartIsAfter(Long userId, LocalDateTime now, Pageable page);
+
+    List<Booking> findByBookerIdAndStatus(Long userId, BookingStatus waiting, Pageable page);
+
     List<Booking> findByItemOwnerIdOrderByStartDesc(Long userId);
 
     List<Booking> findByItemOwnerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(Long userId, LocalDateTime now, LocalDateTime now2);
@@ -32,6 +43,16 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findByItemOwnerIdAndStartIsAfterOrderByStartDesc(Long userId, LocalDateTime now);
 
     List<Booking> findByItemOwnerIdAndStatusOrderByStartDesc(Long userId, BookingStatus status);
+
+    List<Booking> findByItemOwnerId(Long userId, Pageable page);
+
+    List<Booking> findByItemOwnerIdAndStartIsBeforeAndEndIsAfter(Long userId, LocalDateTime now, LocalDateTime now1, Pageable page);
+
+    List<Booking> findByItemOwnerIdAndEndIsBefore(Long userId, LocalDateTime now, Pageable page);
+
+    List<Booking> findByItemOwnerIdAndStartIsAfter(Long userId, LocalDateTime now, Pageable page);
+
+    List<Booking> findByItemOwnerIdAndStatus(Long userId, BookingStatus waiting, Pageable page);
 
 
     @Query(value = "" +
@@ -57,4 +78,5 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "b.item.id = :itemId AND " +
             "b.end < :now")
     Long countByBookerIdItemIdAndPast(@Param("userId") Long userId, @Param("itemId") Long itemId, @Param("now")LocalDateTime now);
+
 }

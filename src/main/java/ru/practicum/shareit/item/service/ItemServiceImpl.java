@@ -2,6 +2,9 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
@@ -10,6 +13,7 @@ import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.model.BadRequestException;
 import ru.practicum.shareit.exception.model.ForbiddenException;
 import ru.practicum.shareit.exception.model.NotFoundException;
+import ru.practicum.shareit.item.dto.CommentResponseDto;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.dto.ItemUpdateDto;
 import ru.practicum.shareit.item.mapper.CommentMapper;
@@ -19,6 +23,7 @@ import ru.practicum.shareit.item.entity.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.validation.SearchValidator;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -32,11 +37,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class ItemServiceImpl implements ItemService {
-    private final BookingRepository bookingRepository;
 
+    private static final Sort SORT_BY_ID = Sort.by(Sort.Direction.ASC, "id");
+    private final BookingRepository bookingRepository;
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository requestRepository;
     private final ItemMapper itemMapper;
     private final UserMapper userMapper;
     private final BookingMapper bookingMapper;
@@ -44,14 +51,22 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ItemResponseDto> getAllItemsByUserId(Long userId) {
+    public List<ItemResponseDto> getAllItemsByUserId(Long userId, Integer from, Integer size) {
         log.debug("A list of all items owned by user with ID - {} is requested.", userId);
 
         validateUserExists(userId);
-        List<Item> items = itemRepository.findByOwnerIdOrderById(userId);
 
-        log.debug("A list of all items owned by user with ID - {} is received with size of {}.", userId, items.size());
-        return items
+        List<Item> foundItems;
+        if (from == null || size == null) {
+            foundItems = itemRepository.findByOwnerIdOrderById(userId);
+        } else {
+            validatePaginationParameters(from, size);
+            Pageable page = PageRequest.of(from / size, size, SORT_BY_ID);
+            foundItems = itemRepository.findByOwnerId(userId, page);
+        }
+
+        log.debug("A list of all items owned by user with ID - {} is received with size of {}.", userId, foundItems.size());
+        return foundItems
                 .stream()
                 .map(item -> toItemResponseDto(userId, item))
                 .collect(Collectors.toList());
@@ -63,9 +78,9 @@ public class ItemServiceImpl implements ItemService {
         log.debug("Item with ID - {} is requested.", itemId);
 
         validateUserExists(userId);
-        Item savedItem = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(String.format("Item with id: %d is not found", itemId)));
+        Item foundItem = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(String.format("Item with id: %d is not found", itemId)));
 
-        ItemResponseDto result = toItemResponseDto(userId, savedItem);
+        ItemResponseDto result = toItemResponseDto(userId, foundItem);
 
         log.debug("Item with ID - {} is received.", result.getId());
         return result;
@@ -73,19 +88,23 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public Item createItem(Long userId, Item item) {
+    public ItemResponseDto createItem(Long userId, Item item, Long requestId) {
         log.debug("Request to add item with name - {} is received.", item.getName());
 
-        item.setOwner(userRepository.findById(userId).orElseThrow(() -> new NotFoundException(String.format("User with id: %d is not found", userId))));
-        Item savedItem = itemRepository.save(item);
+        if (requestId != null) {
+            item.setRequest(requestRepository.findById(requestId).orElseThrow(() -> new NotFoundException(String.format("Item request with id: %d is not found", requestId))));
+        }
 
-        log.debug("Item with id - {} is created.", item.getId());
-        return savedItem;
+        item.setOwner(userRepository.findById(userId).orElseThrow(() -> new NotFoundException(String.format("User with id: %d is not found", userId))));
+        Item createdItem = itemRepository.save(item);
+
+        log.debug("Item with id - {} is created.", createdItem.getId());
+        return itemMapper.toItemResponseDto(createdItem);
     }
 
     @Override
     @Transactional
-    public Item updateItem(Long userId, Long itemId, ItemUpdateDto itemDto) {
+    public ItemResponseDto updateItem(Long userId, Long itemId, ItemUpdateDto itemDto) {
         log.debug("Request to update item with ID - {} is received.", itemId);
 
         validateUserExists(userId);
@@ -99,29 +118,38 @@ public class ItemServiceImpl implements ItemService {
         Item updatedItem = itemRepository.save(itemForUpdate);
 
         log.debug("Item with ID - {} is updated in repository.", updatedItem.getId());
-        return updatedItem;
+        return itemMapper.toItemResponseDto(updatedItem);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Item> searchItemsByText(Long userId, String text) {
+    public List<ItemResponseDto> searchItemsByText(Long userId, String text, Integer from, Integer size) {
         log.debug("A list of all items containing text ({}) in name or description is requested.", text);
 
         validateUserExists(userId);
-        List<Item> result = new ArrayList<>();
         if (!SearchValidator.validateText(text)) {
-            return result;
+            return new ArrayList<>();
         }
 
-        result = itemRepository.searchByNameOrDescription(text);
+        List<Item> foundItems;
+        if (from == null || size == null) {
+            foundItems = itemRepository.searchByNameOrDescription(text);
+        } else {
+            validatePaginationParameters(from, size);
+            Pageable page = PageRequest.of(from / size, size, SORT_BY_ID);
+            foundItems = itemRepository.searchByNameOrDescription(text, page);
+        }
 
-        log.debug("A list of all items containing text ({}) in name or description is received with size of {}.", text, result.size());
-        return result;
+        log.debug("A list of all items containing text ({}) in name or description is received with size of {}.", text, foundItems.size());
+        return foundItems
+                .stream()
+                .map(itemMapper::toItemResponseDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     @Transactional
-    public Comment createComment(Long userId, Long itemId, Comment comment) {
+    public CommentResponseDto createComment(Long userId, Long itemId, Comment comment) {
         log.debug("Request to add comment to item {} by user with id {} received.", itemId, userId);
 
         validateUserExists(userId);
@@ -131,10 +159,10 @@ public class ItemServiceImpl implements ItemService {
         comment.setItem(itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(String.format("Item with id: %d is not found", userId))));
         comment.setAuthor(userRepository.findById(userId).orElseThrow(() -> new NotFoundException(String.format("User with id: %d is not found", userId))));
 
-        Comment savedComment = commentRepository.save(comment);
+        Comment createdComment = commentRepository.save(comment);
 
-        log.debug("Comment to item {} is created with id {}.", itemId, savedComment.getId());
-        return savedComment;
+        log.debug("Comment to item {} is created with id {}.", itemId, createdComment.getId());
+        return commentMapper.toCommentResponseDto(createdComment);
     }
 
     private ItemResponseDto toItemResponseDto(Long userId, Item item) {
@@ -149,6 +177,9 @@ public class ItemServiceImpl implements ItemService {
         responseDto.setDescription(item.getDescription());
         responseDto.setOwner(userMapper.toUserResponseDto(item.getOwner()));
         responseDto.setAvailable(item.getAvailable());
+        if (item.getRequest() != null) {
+            responseDto.setRequestId(item.getRequest().getId());
+        }
 
         populateItemDtoWithBookings(userId, item, responseDto);
 
@@ -195,7 +226,13 @@ public class ItemServiceImpl implements ItemService {
 
     private void validateUserBookedItemAndBookingEnded(Long authorId, Long itemId) {
         if (bookingRepository.countByBookerIdItemIdAndPast(authorId, itemId, LocalDateTime.now()) < 1) {
-            throw new BadRequestException("Comment cannot be published for unfinished or future booking");
+            throw new BadRequestException("Comment cannot be published for non-existing, unfinished or future booking");
+        }
+    }
+
+    private void validatePaginationParameters(Integer from, Integer size) {
+        if (from < 0 || size < 1) {
+            throw new BadRequestException("Incorrect pagination parameters.");
         }
     }
 

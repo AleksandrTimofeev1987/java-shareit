@@ -12,42 +12,38 @@ import ru.practicum.shareit.user.service.UserService;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserService userService;
+    private final UserService service;
     private final UserMapper mapper;
 
     @GetMapping
     public List<UserResponseDto> getAllUsers() {
-        return userService.getAllUsers()
-                .stream()
-                .map(mapper::toUserResponseDto)
-                .collect(Collectors.toList());
+        return service.getAllUsers();
     }
 
     @GetMapping("/{id}")
     public UserResponseDto getUserById(@Min(1L) @PathVariable Long id) {
-        return mapper.toUserResponseDto(userService.getUserById(id));
+        return service.getUserById(id);
     }
 
     @PostMapping
     public UserResponseDto createUser(@Valid @RequestBody UserCreateDto userDto) {
         User user = mapper.toUserEntity(userDto);
-        return mapper.toUserResponseDto(userService.createUser(user));
+        return service.createUser(user);
     }
 
     @PatchMapping("/{id}")
     public UserResponseDto updateUser(@Min(1L) @PathVariable Long id, @RequestBody UserUpdateDto userDto) {
-        return mapper.toUserResponseDto(userService.updateUser(id, userDto));
+        return service.updateUser(id, userDto);
     }
 
     @DeleteMapping("/{id}")
     public void deleteUser(@Min(1L) @PathVariable Long id) {
-        userService.deleteUser(id);
+        service.deleteUser(id);
     }
 }
