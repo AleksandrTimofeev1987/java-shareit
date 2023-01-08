@@ -22,8 +22,8 @@ public class ItemController {
 
     @GetMapping
     public List<ItemResponseDto> getAllItemsByUserId(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
-                                                     @RequestParam(required = false) Integer from,
-                                                     @RequestParam(required = false) Integer size) {
+                                                     @RequestParam(required = false, defaultValue = "0") Integer from,
+                                                     @RequestParam(required = false, defaultValue = "10") Integer size) {
         return service.getAllItemsByUserId(userId, from, size);
     }
 
@@ -50,8 +50,8 @@ public class ItemController {
     @GetMapping("/search")
     public List<ItemResponseDto> searchItemsByText(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                                    @RequestParam String text,
-                                                   @RequestParam(required = false) Integer from,
-                                                   @RequestParam(required = false) Integer size) {
+                                                   @RequestParam(required = false, defaultValue = "0") Integer from,
+                                                   @RequestParam(required = false, defaultValue = "10") Integer size) {
         return service.searchItemsByText(userId, text, from, size);
     }
 

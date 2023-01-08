@@ -93,7 +93,6 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     public BookingResponseDto createBooking(Long userId, Booking booking) {
         log.debug("Request to add booking for item with id - {} is received.", booking.getItem().getId());
-        validateStartBeforeEnd(booking);
 
         Item bookedItem = itemRepository.findById(booking.getItem().getId()).orElseThrow(() -> new NotFoundException(String.format("Item with id: %d is not found", booking.getItem().getId())));
         validateItemIsAvailable(bookedItem);
@@ -190,12 +189,6 @@ public class BookingServiceImpl implements BookingService {
     private void validateItemIsAvailable(Item bookedItem) {
         if (!bookedItem.getAvailable()) {
             throw new BadRequestException(String.format("Item with ID - %d is not available", bookedItem.getId()));
-        }
-    }
-
-    private void validateStartBeforeEnd(Booking booking) {
-        if (booking.getEnd().isBefore(booking.getStart())) {
-            throw new BadRequestException("Booking end should not be before booking end");
         }
     }
 

@@ -30,6 +30,7 @@ public class BookingController {
                                                          @RequestParam(name = "state", defaultValue = "ALL") String stateParam,
                                                          @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
                                                          @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
+        log.info("Getting all bookings by booker with userId={}", userId);
         RequestState state = RequestState.from(stateParam)
                 .orElseThrow(() -> new BadRequestException("Unknown state: " + stateParam));
         validatePaginationParameters(from, size);
@@ -41,6 +42,7 @@ public class BookingController {
                                                         @RequestParam(name = "state", defaultValue = "ALL") String stateParam,
                                                         @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
                                                         @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
+        log.info("Getting all bookings by owner with userId={}", userId);
         RequestState state = RequestState.from(stateParam)
                 .orElseThrow(() -> new BadRequestException("Unknown state: " + stateParam));
         validatePaginationParameters(from, size);
@@ -50,6 +52,7 @@ public class BookingController {
     @GetMapping("/{bookingId}")
     public ResponseEntity<Object> getBookingById(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                                  @Positive @PathVariable Long bookingId) {
+        log.info("Getting bookings by bookingId={} userId={}", bookingId, userId);
         return bookingClient.getBookingById(userId, bookingId);
     }
 
@@ -57,6 +60,7 @@ public class BookingController {
     public ResponseEntity<Object> createBooking(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                                 @Valid @RequestBody BookingCreateDto bookingDto) {
         log.info("Creating booking {}, userId={}", bookingDto, userId);
+        validateStartBeforeEnd(bookingDto);
         return bookingClient.createBooking(userId, bookingDto);
     }
 
@@ -70,6 +74,12 @@ public class BookingController {
     private void validatePaginationParameters(Integer from, Integer size) {
         if (from < 0 || size < 1) {
             throw new BadRequestException("Incorrect pagination parameters.");
+        }
+    }
+
+    private void validateStartBeforeEnd(BookingCreateDto booking) {
+        if (booking.getEnd().isBefore(booking.getStart())) {
+            throw new BadRequestException("Booking end should not be before booking end");
         }
     }
 }

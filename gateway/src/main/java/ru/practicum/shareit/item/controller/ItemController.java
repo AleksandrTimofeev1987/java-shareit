@@ -29,6 +29,7 @@ public class ItemController {
     public ResponseEntity<Object> getAllItemsByUserId(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                                       @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
                                                       @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
+        log.info("Getting all items by owner with userId={}", userId);
         validatePaginationParameters(from, size);
         return itemClient.getAllItemsByUserId(userId, from, size);
     }
@@ -36,6 +37,7 @@ public class ItemController {
     @GetMapping("/{itemId}")
     public ResponseEntity<Object> getItemById(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                        @Positive @PathVariable Long itemId) {
+        log.info("Getting item with itemId={}, userId={}", itemId, userId);
         return itemClient.getItemById(userId, itemId);
     }
 
@@ -59,6 +61,7 @@ public class ItemController {
                                                    @RequestParam String text,
                                                    @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
                                                    @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
+        log.info("Searching all items by text={}, userId={}", text, userId);
         validatePaginationParameters(from, size);
         return itemClient.searchItemsByText(userId, text, from, size);
     }
@@ -67,6 +70,7 @@ public class ItemController {
     public ResponseEntity<Object> createComment(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                             @Positive @PathVariable Long itemId,
                                             @Valid @RequestBody CommentCreateDto commentDto) {
+        log.debug("Creating comment for itemId={}", itemId);
         return itemClient.createComment(userId, itemId, commentDto);
     }
 
