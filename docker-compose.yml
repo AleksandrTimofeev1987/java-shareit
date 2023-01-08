@@ -1,6 +1,7 @@
 version: '3.8'
 services:
   gateway:
+#    build: /gateway (for Windows start)
     build: ./gateway
     image: gateway
     container_name: shareit-gateway
@@ -10,10 +11,12 @@ services:
       - server
     environment:
       - SHAREIT_SERVER_URL=http://server:9090
+#      For local Postman tests
 #      - TZ=Europe/Moscow
 #      - DEBIAN_FRONTEND=noninteractive
 
   server:
+#    build: /server (for Windows start)
     build: ./server
     image: server
     container_name: shareit-server
@@ -28,6 +31,7 @@ services:
       - POSTGRES_PASSWORD=test
       - DB_HOST=db
       - DB_PORT=5432
+#      For local Postman tests
 #      - TZ=Europe/Moscow
 #      - DEBIAN_FRONTEND=noninteractive
 
@@ -42,5 +46,6 @@ services:
       - POSTGRES_DB=shareit
       - POSTGRES_USER=test
       - POSTGRES_PASSWORD=test
+#      For local Postman tests
 #      - TZ=Europe/Moscow
 #      - DEBIAN_FRONTEND=noninteractive
