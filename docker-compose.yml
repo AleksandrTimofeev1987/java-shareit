@@ -10,8 +10,8 @@ services:
       - server
     environment:
       - SHAREIT_SERVER_URL=http://server:9090
-      - TZ=Europe/Moscow
-      - DEBIAN_FRONTEND=noninteractive
+#      - TZ=Europe/Moscow
+#      - DEBIAN_FRONTEND=noninteractive
 
   server:
     build: ./server
@@ -28,8 +28,8 @@ services:
       - POSTGRES_PASSWORD=test
       - DB_HOST=db
       - DB_PORT=5432
-      - TZ=Europe/Moscow
-      - DEBIAN_FRONTEND=noninteractive
+#      - TZ=Europe/Moscow
+#      - DEBIAN_FRONTEND=noninteractive
 
   db:
     image: postgres:13.7-alpine
@@ -42,5 +42,5 @@ services:
       - POSTGRES_DB=shareit
       - POSTGRES_USER=test
       - POSTGRES_PASSWORD=test
-      - TZ=Europe/Moscow
-      - DEBIAN_FRONTEND=noninteractive
+#      - TZ=Europe/Moscow
+#      - DEBIAN_FRONTEND=noninteractive
