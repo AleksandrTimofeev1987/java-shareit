@@ -17,6 +17,7 @@ import ru.practicum.shareit.user.dto.UserCreateDto;
 import java.time.LocalDateTime;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 //@SpringBootTest
@@ -182,6 +183,25 @@ public class ItemControllerTest {
 
                 //then
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    public void shouldReturn200AndEmptyListOnSearchItemsByBlankText() throws Exception {
+        //given
+        postValidUser(VALID_USER);
+        postValidItem(VALID_ITEM);
+
+        //when
+        mockMvc.perform(
+                        get("/items/search")
+                                .header(REQUEST_HEADER_USER_ID_TITLE, 1)
+                                .param("text", "")
+                )
+
+                //then
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("length()").value(0));
     }
 
     private void postValidUser(UserCreateDto user) throws Exception {

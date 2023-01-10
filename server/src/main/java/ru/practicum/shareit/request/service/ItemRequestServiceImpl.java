@@ -57,12 +57,10 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
         validateUserExists(userId);
 
-        List<ItemRequest> foundItemRequests;
-
         Pageable page = PageRequest.of(from / size, size, SORT_BY_CREATED);
 
-        Page<ItemRequest> foundItemRequestsPage = requestRepository.findAll(page);
-        foundItemRequests = getFilteredItemRequests(userId, foundItemRequestsPage.getContent());
+        Page<ItemRequest> foundItemRequestsPage = requestRepository.findItemRequestsByRequester_IdIsNot(userId, page);
+        List<ItemRequest> foundItemRequests = foundItemRequestsPage.getContent();
 
         log.debug("A list of all item requests created by other users is received with size of {}.", foundItemRequests.size());
         return foundItemRequests
@@ -109,13 +107,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .collect(Collectors.toList()));
 
         return itemRequestResponseDto;
-    }
-
-    private List<ItemRequest> getFilteredItemRequests(Long userId, List<ItemRequest> foundItemRequests) {
-        return foundItemRequests
-                .stream()
-                .filter(request -> !request.getRequester().getId().equals(userId))
-                .collect(Collectors.toList());
     }
 
     private void validateUserExists(long userId) {

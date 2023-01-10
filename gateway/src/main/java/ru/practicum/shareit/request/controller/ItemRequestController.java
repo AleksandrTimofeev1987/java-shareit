@@ -31,8 +31,8 @@ public class ItemRequestController {
 
     @GetMapping("/all")
     public ResponseEntity<Object> getAllItemRequests(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
-                                                     @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
-                                                     @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
+                                                     @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
+                                                     @Positive @RequestParam(defaultValue = "10") Integer size) {
         log.debug("Getting all item requests by others with userId={}", userId);
         validatePaginationParameters(from, size);
         return requestClient.getAllItemRequests(userId, from, size);

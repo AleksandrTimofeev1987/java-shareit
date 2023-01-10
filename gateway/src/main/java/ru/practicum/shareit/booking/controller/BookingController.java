@@ -28,8 +28,8 @@ public class BookingController {
     @GetMapping
     public ResponseEntity<Object> getAllBookingsByBooker(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                                          @RequestParam(name = "state", defaultValue = "ALL") String stateParam,
-                                                         @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
-                                                         @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
+                                                         @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
+                                                         @Positive @RequestParam(defaultValue = "10") Integer size) {
         log.info("Getting all bookings by booker with userId={}", userId);
         RequestState state = RequestState.from(stateParam)
                 .orElseThrow(() -> new BadRequestException("Unknown state: " + stateParam));
@@ -40,8 +40,8 @@ public class BookingController {
     @GetMapping("/owner")
     public ResponseEntity<Object> getAllBookingsByOwner(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                                         @RequestParam(name = "state", defaultValue = "ALL") String stateParam,
-                                                        @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
-                                                        @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
+                                                        @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
+                                                        @Positive @RequestParam(defaultValue = "10") Integer size) {
         log.info("Getting all bookings by owner with userId={}", userId);
         RequestState state = RequestState.from(stateParam)
                 .orElseThrow(() -> new BadRequestException("Unknown state: " + stateParam));

@@ -13,7 +13,6 @@ services:
       - SHAREIT_SERVER_URL=http://server:9090
 #      For local Postman tests
 #      - TZ=Europe/Moscow
-#      - DEBIAN_FRONTEND=noninteractive
 
   server:
 #    build: /server (for Windows start)
@@ -33,7 +32,6 @@ services:
       - DB_PORT=5432
 #      For local Postman tests
 #      - TZ=Europe/Moscow
-#      - DEBIAN_FRONTEND=noninteractive
 
   db:
     image: postgres:13.7-alpine
@@ -48,4 +46,3 @@ services:
       - POSTGRES_PASSWORD=test
 #      For local Postman tests
 #      - TZ=Europe/Moscow
-#      - DEBIAN_FRONTEND=noninteractive

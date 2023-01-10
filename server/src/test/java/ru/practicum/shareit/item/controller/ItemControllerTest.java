@@ -403,25 +403,6 @@ public class ItemControllerTest {
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    public void shouldReturn200AndEmptyListOnSearchItemsByBlankText() throws Exception {
-        //given
-        postValidUser(VALID_USER);
-        postValidItem(VALID_ITEM);
-
-        //when
-        mockMvc.perform(
-                        get("/items/search")
-                                .header(REQUEST_HEADER_USER_ID_TITLE, 1)
-                                .param("text", "")
-                )
-
-                //then
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("length()").value(0));
-    }
-
-    @Test
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     public void shouldReturn200andListOnSearchItemsByNamePaged() throws Exception {
         //given
         postValidUser(VALID_USER);

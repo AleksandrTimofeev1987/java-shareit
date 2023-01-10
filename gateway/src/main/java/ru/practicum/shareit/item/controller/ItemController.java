@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import ru.practicum.shareit.item.dto.ItemUpdateDto;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/items")
@@ -27,8 +29,8 @@ public class ItemController {
 
     @GetMapping
     public ResponseEntity<Object> getAllItemsByUserId(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
-                                                      @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
-                                                      @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
+                                                      @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
+                                                      @Positive @RequestParam(defaultValue = "10") Integer size) {
         log.info("Getting all items by owner with userId={}", userId);
         validatePaginationParameters(from, size);
         return itemClient.getAllItemsByUserId(userId, from, size);
@@ -59,10 +61,13 @@ public class ItemController {
     @GetMapping("/search")
     public ResponseEntity<Object> searchItemsByText(@RequestHeader(REQUEST_HEADER_USER_ID_TITLE) Long userId,
                                                    @RequestParam String text,
-                                                   @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
-                                                   @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
+                                                   @PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
+                                                   @Positive @RequestParam(defaultValue = "10") Integer size) {
         log.info("Searching all items by text={}, userId={}", text, userId);
         validatePaginationParameters(from, size);
+        if (!validateText(text)) {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+        }
         return itemClient.searchItemsByText(userId, text, from, size);
     }
 
@@ -78,5 +83,9 @@ public class ItemController {
         if (from < 0 || size < 1) {
             throw new BadRequestException("Incorrect pagination parameters.");
         }
+    }
+
+    public static boolean validateText(String text) {
+        return !text.equals("");
     }
 }

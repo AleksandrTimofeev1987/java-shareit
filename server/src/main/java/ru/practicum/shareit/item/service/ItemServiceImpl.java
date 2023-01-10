@@ -22,13 +22,11 @@ import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
-import ru.practicum.shareit.item.validation.SearchValidator;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -121,9 +119,6 @@ public class ItemServiceImpl implements ItemService {
         log.debug("A list of all items containing text ({}) in name or description is requested.", text);
 
         validateUserExists(userId);
-        if (!SearchValidator.validateText(text)) {
-            return new ArrayList<>();
-        }
 
         Pageable page = PageRequest.of(from / size, size, SORT_BY_ID);
         List<Item> foundItems = itemRepository.searchByNameOrDescription(text, page);

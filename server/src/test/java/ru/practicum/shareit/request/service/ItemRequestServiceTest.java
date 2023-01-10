@@ -137,7 +137,7 @@ public class ItemRequestServiceTest {
                 .thenReturn(true);
 
         Mockito
-                .when(requestRepository.findAll(Mockito.any(Pageable.class)))
+                .when(requestRepository.findItemRequestsByRequester_IdIsNot(Mockito.anyLong(), Mockito.any(Pageable.class)))
                 .thenReturn(foundRequestsPage);
 
         Mockito
